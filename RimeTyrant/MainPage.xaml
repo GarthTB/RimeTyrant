@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="RimeTyrant.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Loaded="MainPage_Loaded">
+
+    <StackLayout Style="{StaticResource AdaptiveStackLayout}">
+
+        <ScrollView>
+            <VerticalStackLayout
+                MinimumHeightRequest="400"
+                MinimumWidthRequest="320"
+                Spacing="20"
+                Style="{StaticResource AdaptiveVerticalLeft}">
+
+                <Editor
+                    x:Name="WordToAdd"
+                    HeightRequest="88"
+                    Placeholder="待添加的词"
+                    Text="{Binding WordToAdd, Mode=TwoWay}"
+                    TextChanged="WordToAdd_TextChanged"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox
+                        x:Name="UseAutoEncode"
+                        Grid.Column="0"
+                        IsChecked="{Binding UseAutoEncode, Mode=TwoWay}" />
+
+                    <Picker
+                        x:Name="AutoEncodeMethod"
+                        Grid.Column="1"
+                        IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
+                        ItemsSource="{Binding EncodeMethodArray, Mode=TwoWay}"
+                        SelectedIndex="{Binding EncodeMethodIndex, Mode=TwoWay}"
+                        Title="自动编码" />
+
+                    <Picker
+                        x:Name="CodeLength"
+                        Grid.Column="3"
+                        IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
+                        ItemsSource="{Binding ValidCodeLengthArray, Mode=TwoWay}"
+                        SelectedIndex="{Binding CodeLengthIndex, Mode=TwoWay}"
+                        Title="码长" />
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Picker
+                        x:Name="AutoCode"
+                        Grid.Column="0"
+                        IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
+                        ItemsSource="{Binding AutoCodeArray, Mode=TwoWay}"
+                        SelectedIndex="{Binding AutoCodeIndex, Mode=TwoWay}" />
+
+                    <Entry
+                        x:Name="ManualEncode"
+                        Grid.Column="2"
+                        IsEnabled="{Binding UseManualEncode, Mode=TwoWay}"
+                        MaxLength="12"
+                        Placeholder="手动编码"
+                        Text="{Binding ManualCode, Mode=TwoWay}" />
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox
+                        x:Name="UsePriority"
+                        Grid.Column="0"
+                        IsChecked="{Binding UsePriority, Mode=TwoWay}" />
+
+                    <Entry
+                        x:Name="Priority"
+                        Grid.Column="1"
+                        IsEnabled="{Binding UsePriority, Mode=TwoWay}"
+                        MaxLength="24"
+                        Placeholder="优先级"
+                        Text="{Binding Priority, Mode=TwoWay}" />
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="9*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="8*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="6*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                        x:Name="ReloadButton"
+                        Grid.Column="0"
+                        Clicked="ReloadButton_Clicked"
+                        Text="重载词库" />
+                    <Button Grid.Column="2" Text="日志页" />
+                    <Button
+                        Grid.Column="4"
+                        IsEnabled="{Binding AllowAdd, Mode=TwoWay}"
+                        Text="添加" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ScrollView>
+            <VerticalStackLayout
+                MinimumHeightRequest="400"
+                MinimumWidthRequest="360"
+                Spacing="20"
+                Style="{StaticResource AdaptiveVerticalRight}">
+
+                <Entry
+                    x:Name="CodeToSearch"
+                    MaxLength="36"
+                    Placeholder="编码查询"
+                    Text="{Binding CodeToSearch, Mode=TwoWay}" />
+
+                <ListView
+                    x:Name="ResultArray"
+                    ItemsSource="{Binding ResultArray, Mode=TwoWay}"
+                    Style="{StaticResource AdaptiveListView}"
+                    WidthRequest="320">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="0,2,0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4*" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="4*" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="3*" />
+                                        <ColumnDefinition Width="12" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Entry Grid.Column="0" Text="{Binding Word}" />
+                                    <Entry Grid.Column="2" Text="{Binding Code}" />
+                                    <Entry Grid.Column="4" Text="{Binding Priority}" />
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="3*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                        Grid.Column="0"
+                        IsEnabled="{Binding AllowDel, Mode=TwoWay}"
+                        Text="删除" />
+                    <Button
+                        Grid.Column="2"
+                        IsEnabled="{Binding AllowCut, Mode=TwoWay}"
+                        Text="截短" />
+                    <Button
+                        Grid.Column="4"
+                        IsEnabled="{Binding AllowMod, Mode=TwoWay}"
+                        Text="应用修改" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </StackLayout>
+
+</ContentPage>
