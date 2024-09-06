@@ -4,7 +4,7 @@ namespace RimeTyrant.Tools
 {
     internal static class JD
     {
-        private static readonly HashSet<Line> _dict = [];
+        private static readonly HashSet<Item> _dict = [];
 
         public static void Load(string path)
         {
@@ -16,12 +16,12 @@ namespace RimeTyrant.Tools
                 var parts = line.Split('\t');
                 if (parts.Length == 2)
                 {
-                    if (!_dict.Add(new Line(parts[0], parts[1])))
+                    if (!_dict.Add(new Item(parts[0], parts[1])))
                         throw new Exception($"无法读取单字文件中的：{parts[0]} {parts[1]}");
                 }
                 else if (parts.Length == 3)
                 {
-                    if (!_dict.Add(new Line(parts[0], parts[1], parts[2])))
+                    if (!_dict.Add(new Item(parts[0], parts[1], parts[2])))
                         throw new Exception($"无法读取单字文件中的：{parts[0]} {parts[1]} {parts[2]}");
                 }
             }

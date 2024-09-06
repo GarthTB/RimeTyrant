@@ -220,9 +220,9 @@ namespace RimeTyrant.Tools
             }
         }
 
-        private Line[] _originResultArray = [];
+        private Item[] _originResultArray = [];
 
-        public Line[] ResultArray { get; set; } = [];
+        public Item[] ResultArray { get; set; } = [];
 
         #endregion
 
