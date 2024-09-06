@@ -37,15 +37,16 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Placeholder="待添加的词"
+                TextColor="{Binding WordColor, Mode=TwoWay}"
                 Text="{Binding WordToAdd, Mode=TwoWay}"
                 TextChanged="WordToAdd_TextChanged" />
 
             <Grid Grid.Row="2" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="46" />
-                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="7*" />
                     <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="4*" />
                 </Grid.ColumnDefinitions>
 
                 <CheckBox
@@ -59,7 +60,7 @@
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding EncodeMethodArray, Mode=TwoWay}"
                     SelectedIndex="{Binding EncodeMethodIndex, Mode=TwoWay}"
-                    Title="自动编码" />
+                    Title="编码方案" />
 
                 <Picker
                     x:Name="CodeLength"
@@ -82,6 +83,7 @@
                 <Picker
                     x:Name="AutoCode"
                     Grid.Column="0"
+                    TextColor="{Binding AutoCodeColor, Mode=TwoWay}"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding AutoCodeArray, Mode=TwoWay}"
                     SelectedIndex="{Binding AutoCodeIndex, Mode=TwoWay}" />
@@ -89,6 +91,7 @@
                 <Entry
                     x:Name="ManualEncode"
                     Grid.Column="1"
+                    TextColor="{Binding ManualCodeColor, Mode=TwoWay}"
                     IsEnabled="{Binding UseManualEncode, Mode=TwoWay}"
                     MaxLength="12"
                     Placeholder="手动编码"

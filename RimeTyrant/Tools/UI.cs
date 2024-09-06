@@ -13,20 +13,32 @@ namespace RimeTyrant.Tools
 
         private string _wordToAdd = string.Empty;
 
+        private string _wordColor = string.Empty;
+
         private bool _useAutoEncode = false;
 
         private bool _usePriority = false;
 
+        private string[] _encodeMethodArray = [];
+
         // 0：键道6
         private int _encodeMethodIndex = 0;
+
+        private int[] _validCodeLengthArray = [];
 
         // 是码长序号，不是码长
         private int _codeLengthIndex = 0;
 
+        private string[] _autoCodeArray = [];
+
         // 是自动编码序号，不是编码
         private int _autoCodeIndex = 0;
 
+        private string _autoCodeColor = string.Empty;
+
         private string _manualCode = string.Empty;
+
+        private string _manualCodeColor = string.Empty;
 
         private string _Priority = string.Empty;
 
@@ -43,6 +55,22 @@ namespace RimeTyrant.Tools
                 {
                     _wordToAdd = value;
                     OnPropertyChanged(nameof(WordToAdd));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 加词框里的文字颜色，当空时，使用默认颜色
+        /// </summary>
+        public string WordColor
+        {
+            get => _wordColor;
+            set
+            {
+                if (_wordColor != value)
+                {
+                    _wordColor = value;
+                    OnPropertyChanged(nameof(WordColor));
                 }
             }
         }
@@ -80,7 +108,18 @@ namespace RimeTyrant.Tools
             }
         }
 
-        public string[] EncodeMethodArray { get; } = ["键道6"];
+        public string[] EncodeMethodArray
+        {
+            get => _encodeMethodArray;
+            set
+            {
+                if (_encodeMethodArray != value)
+                {
+                    _encodeMethodArray = value;
+                    OnPropertyChanged(nameof(EncodeMethodArray));
+                }
+            }
+        }
 
         public int EncodeMethodIndex
         {
@@ -92,24 +131,27 @@ namespace RimeTyrant.Tools
                     _encodeMethodIndex = value;
                     OnPropertyChanged(nameof(EncodeMethodIndex));
                     OnPropertyChanged(nameof(EncodeMethod));
-                    UpdateCodeLengthArray();
                 }
             }
         }
 
-        private void UpdateCodeLengthArray()
+        public string? EncodeMethod
+            => EncodeMethodArray.Length < EncodeMethodIndex - 1
+                ? null
+                : EncodeMethodArray[EncodeMethodIndex];
+
+        public int[] ValidCodeLengthArray
         {
-            switch (EncodeMethod)
+            get => _validCodeLengthArray;
+            set
             {
-                case "键道6":
-                    ValidCodeLengthArray = [3, 4, 5, 6];
-                    break;
+                if (_validCodeLengthArray != value)
+                {
+                    _validCodeLengthArray = value;
+                    OnPropertyChanged(nameof(ValidCodeLengthArray));
+                }
             }
         }
-
-        public string EncodeMethod => EncodeMethodArray[EncodeMethodIndex];
-
-        public int[] ValidCodeLengthArray { get; private set; } = [3, 4, 5, 6];
 
         /// <summary>
         /// 是码长序号，不是码长
@@ -128,9 +170,23 @@ namespace RimeTyrant.Tools
             }
         }
 
-        public int CodeLength => ValidCodeLengthArray[CodeLengthIndex];
+        public int CodeLength
+            => ValidCodeLengthArray.Length < CodeLengthIndex - 1
+                ? -1
+                : ValidCodeLengthArray[CodeLengthIndex];
 
-        public string[] AutoCodeArray { get; private set; } = [];
+        public string[] AutoCodeArray
+        {
+            get => _autoCodeArray;
+            set
+            {
+                if (_autoCodeArray != value)
+                {
+                    _autoCodeArray = value;
+                    OnPropertyChanged(nameof(AutoCodeArray));
+                }
+            }
+        }
 
         /// <summary>
         /// 是自动编码序号，不是编码
@@ -148,7 +204,44 @@ namespace RimeTyrant.Tools
             }
         }
 
-        public string AutoCode => AutoCodeArray[AutoCodeIndex];
+        public string? AutoCode
+            => AutoCodeArray.Length < AutoCodeIndex
+                ? null
+                : AutoCodeArray[AutoCodeIndex];
+
+        /// <summary>
+        /// 自动编码下拉菜单框里的文字颜色，当空时，使用默认颜色
+        /// </summary>
+        public string AutoCodeColor
+        {
+            get => _autoCodeColor;
+            set
+            {
+                if (_autoCodeColor != value)
+                {
+                    _autoCodeColor = value;
+                    OnPropertyChanged(nameof(AutoCodeColor));
+                }
+            }
+        }
+
+        private string[] _originAutoCodeArray = [];
+
+        public string[] OriginAutoCodeArray
+        {
+            get => _originAutoCodeArray;
+            set
+            {
+                if (_originAutoCodeArray != value)
+                {
+                    _originAutoCodeArray = value;
+                    var now = CodeLength == -1
+                        ? value.Select(s => new string(s))
+                        : value.Select(s => s[..CodeLength]);
+                    AutoCodeArray = [.. now.Distinct().Order()];
+                }
+            }
+        }
 
         #endregion
 
@@ -163,6 +256,22 @@ namespace RimeTyrant.Tools
                 {
                     _manualCode = value;
                     OnPropertyChanged(nameof(ManualCode));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 手动编码框里的文字颜色，当空时，使用默认颜色
+        /// </summary>
+        public string ManualCodeColor
+        {
+            get => _manualCodeColor;
+            set
+            {
+                if (_manualCodeColor != value)
+                {
+                    _manualCodeColor = value;
+                    OnPropertyChanged(nameof(ManualCodeColor));
                 }
             }
         }
@@ -222,7 +331,33 @@ namespace RimeTyrant.Tools
 
         private Item[] _originResultArray = [];
 
-        public Item[] ResultArray { get; set; } = [];
+        public Item[] OriginResultArray
+        {
+            get => _originResultArray;
+            set
+            {
+                if (_originResultArray != value)
+                {
+                    _originResultArray = value;
+                    ResultArray = value;
+                }
+            }
+        }
+
+        private Item[] _resultArray = [];
+
+        public Item[] ResultArray
+        {
+            get => _resultArray;
+            set
+            {
+                if (_resultArray != value)
+                {
+                    _resultArray = value;
+                    OnPropertyChanged(nameof(ResultArray));
+                }
+            }
+        }
 
         #endregion
 

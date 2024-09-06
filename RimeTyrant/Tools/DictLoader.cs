@@ -18,8 +18,6 @@
 
         private static bool AutoLoadDictAndroid(out string message)
         {
-            message = string.Empty;
-
             var userPath = @"storage/emulated/0/rime";
             if (Directory.Exists(userPath))
             {
@@ -31,13 +29,12 @@
                 }
             }
 
+            message = string.Empty;
             return false;
         }
 
         private static bool AutoLoadDictWinUI(out string message)
         {
-            message = string.Empty;
-
             //var parentPath = Directory.GetParent(Directory.GetCurrentDirectory());
             //if (parentPath != null && parentPath.Exists)
             //{
@@ -60,6 +57,7 @@
                 }
             }
 
+            message = string.Empty;
             return false;
         }
 

@@ -8,10 +8,13 @@ namespace RimeTyrant
 
         private readonly UI ui = new();
 
+        private readonly Encoder encoder = new();
+
         public MainPage()
         {
             InitializeComponent();
             BindingContext = ui;
+            ui.EncodeMethodArray = ["键道6", "<待续>"];
         }
 
         #endregion
@@ -58,7 +61,36 @@ namespace RimeTyrant
 
         private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (!string.IsNullOrWhiteSpace(ui.WordToAdd)
+                && Text.IsValidWord(ui.WordToAdd))
+            {
+                ui.WordColor = Dict.HasWord(ui.WordToAdd)
+                    ? "IndianRed"
+                    : string.Empty;
+                if (ui.UseAutoEncode && encoder.Ready)
+                {
+                    // 载入自动编码
+                }
+            }
+            else ui.AutoCodeArray = [];
+            CheckAddBtn();
         }
+
+        //private void UpdateCodeData()
+        //{
+        //    ui.ValidCodeLengthArray = ui.EncodeMethod switch
+        //    {
+        //        "键道6" => [3, 4, 5, 6],
+        //        _ => [],
+        //    };
+        //    _ = encoder.SetCode(ui.EncodeMethod ?? string.Empty, out string message)
+        //        ? DisplayAlert("提示", message, "好的")
+        //        : DisplayAlert("提示", message, "好的");
+        //}
+
+        public void CheckAddBtn()
+            => ui.AllowAdd = Dict.Loaded
+                             && ((ui.UseAutoEncode && encoder.Ready)
+                             || (ui.UseManualEncode && Text.IsValidCode(ui.ManualCode)));
     }
 }

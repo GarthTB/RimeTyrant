@@ -8,6 +8,8 @@ namespace RimeTyrant.Tools
         private static readonly List<string> _shit = [];
         private static string _path = string.Empty;
 
+        public static bool Loaded => _dict.Count > 0;
+
         public static void Load(string path)
         {
             _shit.Clear();
