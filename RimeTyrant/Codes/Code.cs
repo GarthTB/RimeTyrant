@@ -12,8 +12,10 @@ namespace RimeTyrant.Codes
 
         public bool AllowAutoCode => Dict.Count > 0;
 
-        public void Load(string path)
+        protected Code(string path)
         {
+            if (!File.Exists(path))
+                throw new Exception("单字文件不存在！");
             using StreamReader sr = new(path, Encoding.UTF8);
             string? line;
             while ((line = sr.ReadLine()) != null)

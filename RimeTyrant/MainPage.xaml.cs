@@ -22,28 +22,20 @@ namespace RimeTyrant
         #region 加载、保存、日志
 
         private void MainPage_Loaded(object sender, EventArgs e)
-        {
-            _ = DictLoader.AutoLoadDict(out string message)
-                ? DisplayAlert("提示", message, "好的")
-                : DisplayAlert("提示", message, "好的");
-        }
+            => FileLoader.AutoLoadDict(this);
 
-        private async void ReloadBtn_Clicked(object sender, EventArgs e)
+        private void ReloadBtn_Clicked(object sender, EventArgs e)
         {
-            var dict = await Loader.PickYaml();
-            if (dict is not null)
+            var dict = FileLoader.PickYaml("选择一个以dict.yaml结尾的词库文件");
+            if (!string.IsNullOrEmpty(dict) && FileLoader.LoadDict(dict))
             {
-                if (DictLoader.LoadDict(dict.FullPath))
-                {
-                    _ = DisplayAlert("提示", "载入成功！", "好的");
-                    ui.WordToAdd = string.Empty;
-                    ui.ManualCode = string.Empty;
-                    ui.Priority = string.Empty;
-                    ui.CodeToSearch = string.Empty;
-                }
-                else await DisplayAlert("提示", "载入失败！", "好的");
+                _ = DisplayAlert("提示", "载入成功！", "好的");
+                ui.WordToAdd = string.Empty;
+                ui.ManualCode = string.Empty;
+                ui.Priority = string.Empty;
+                ui.CodeToSearch = string.Empty;
             }
-            else await DisplayAlert("提示", "未选择有效文件！", "好的");
+            else _ = DisplayAlert("提示", "未载入词库文件！", "好的");
         }
 
         private void LogBtn_Clicked(object sender, EventArgs e)
@@ -59,6 +51,8 @@ namespace RimeTyrant
 
         #endregion
 
+        #region 加词框
+
         private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(ui.WordToAdd)
@@ -67,30 +61,44 @@ namespace RimeTyrant
                 ui.WordColor = Dict.HasWord(ui.WordToAdd)
                     ? "IndianRed"
                     : string.Empty;
-                if (ui.UseAutoEncode && encoder.Ready)
-                {
-                    // 载入自动编码
-                }
+
+                if (ui.UseAutoEncode && ui.EncodeMethod is not null && encoder.Ready(ui.EncodeMethod))
+                    LoadAutoCodes();
             }
             else ui.AutoCodeArray = [];
             CheckAddBtn();
         }
 
-        //private void UpdateCodeData()
-        //{
-        //    ui.ValidCodeLengthArray = ui.EncodeMethod switch
-        //    {
-        //        "键道6" => [3, 4, 5, 6],
-        //        _ => [],
-        //    };
-        //    _ = encoder.SetCode(ui.EncodeMethod ?? string.Empty, out string message)
-        //        ? DisplayAlert("提示", message, "好的")
-        //        : DisplayAlert("提示", message, "好的");
-        //}
+        #endregion
 
-        public void CheckAddBtn()
+        #region 自动编码
+
+        private void UseAutoEncode_CheckedChanged(object sender, CheckedChangedEventArgs e)
+            => InitializeEncoder();
+
+        #endregion
+
+        #region 涉及多个控件的逻辑
+
+        private void CheckAddBtn()
             => ui.AllowAdd = Dict.Loaded
-                             && ((ui.UseAutoEncode && encoder.Ready)
+                             && ((ui.UseAutoEncode && ui.AutoCode is not null && Text.IsValidCode(ui.AutoCode))
                              || (ui.UseManualEncode && Text.IsValidCode(ui.ManualCode)));
+
+        private void InitializeEncoder()
+        {
+            if (ui.UseAutoEncode && ui.EncodeMethod is not null)
+            {
+                _ = encoder.SetCode(ui.EncodeMethod, this, out var array);
+                ui.ValidCodeLengthArray = array;
+            }
+        }
+
+        private void LoadAutoCodes()
+        {
+
+        }
+
+        #endregion
     }
 }

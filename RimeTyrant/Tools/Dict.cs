@@ -6,7 +6,7 @@ namespace RimeTyrant.Tools
     {
         private static readonly HashSet<Item> _dict = [];
         private static readonly List<string> _shit = [];
-        private static string _path = string.Empty;
+        public static string Path { get; private set; } = string.Empty;
 
         public static bool Loaded => _dict.Count > 0;
 
@@ -33,14 +33,14 @@ namespace RimeTyrant.Tools
             }
             if (_dict.Count == 0)
                 throw new Exception("词库文件为空！");
-            _path = path;
+            Path = path;
         }
 
         public static void Save(string? path = null)
         {
-            if (_path.Length == 0)
+            if (Path.Length == 0)
                 return;
-            path ??= _path;
+            path ??= Path;
             using StreamWriter sw = new(path, false, Encoding.UTF8);
             if (_shit.Count > 0)
                 foreach (var shit in _shit)

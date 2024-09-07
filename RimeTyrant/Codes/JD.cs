@@ -1,12 +1,10 @@
 ﻿namespace RimeTyrant.Codes
 {
     /// <summary>
-    /// 键道6
+    /// 星空键道6，2024版
     /// </summary>
-    internal class JD : Code
+    internal class JD(string path) : Code(path)
     {
-        public JD(string path) => Load(path);
-
         protected override bool FindBlank(char[][] codes, string prefix, out string code)
         {
             code = string.Empty;

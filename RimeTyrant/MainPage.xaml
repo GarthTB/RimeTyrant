@@ -51,6 +51,7 @@
 
                 <CheckBox
                     x:Name="UseAutoEncode"
+                    CheckedChanged="UseAutoEncode_CheckedChanged"
                     Grid.Column="0"
                     IsChecked="{Binding UseAutoEncode, Mode=TwoWay}" />
 
