@@ -8,12 +8,16 @@ namespace RimeTyrant.Tools
 
         private string _name = string.Empty;
 
+        private void Reset()
+        {
+            _code = null;
+            _name = string.Empty;
+        }
+
         public bool Ready(string name)
             => _name == name
                && _code is not null
                && _code.AllowAutoCode;
-
-        public delegate Code Initializer(string filePath);
 
         /// <summary>
         /// 设置编码方案，返回值为所有有效码长和默认码长的所在的索引
@@ -23,13 +27,19 @@ namespace RimeTyrant.Tools
             switch (codeName)
             {
                 case "键道6":
-                    Initializer Initialize = (filePath) => new JD(filePath);
-                    _code = FileLoader.LoadSingle("xkjd6.danzi.dict.yaml", codeName, Initialize);
-                    _name = codeName;
-                    return ([3, 4, 5, 6], 1);
+                    var success = Simp.Try(() =>
+                    {
+                        static Code Initialize(string filePath) => new JD(filePath);
+                        _code = FileLoader.LoadSingle("xkjd6.danzi.dict.yaml", codeName, Initialize);
+                        _name = codeName;
+                    });
+                    if (success)
+                        return ([3, 4, 5, 6], 1);
+                    Reset();
+                    return ([], -1);
+
                 default:
-                    _code = null;
-                    _name = string.Empty;
+                    Reset();
                     return ([], -1);
             }
         }

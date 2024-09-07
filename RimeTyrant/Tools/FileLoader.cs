@@ -1,10 +1,11 @@
 ﻿using RimeTyrant.Codes;
-using static RimeTyrant.Tools.Encoder;
 
 namespace RimeTyrant.Tools
 {
     internal static class FileLoader
     {
+        public delegate Code Initializer(string filePath);
+
         public static string PickYaml(string title)
         {
             try

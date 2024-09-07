@@ -7,6 +7,9 @@ namespace RimeTyrant.Tools
     /// </summary>
     internal class UI : INotifyPropertyChanged
     {
+        // 始终和主页保持同一个编码器
+        public Encoder encoder = new();
+
         #region 加词配置
 
         #region 字段
@@ -130,7 +133,6 @@ namespace RimeTyrant.Tools
                 {
                     _encodeMethodIndex = value;
                     OnPropertyChanged(nameof(EncodeMethodIndex));
-                    OnPropertyChanged(nameof(EncodeMethod));
                 }
             }
         }
@@ -164,8 +166,10 @@ namespace RimeTyrant.Tools
                 if (_codeLengthIndex != value)
                 {
                     _codeLengthIndex = value;
+                    AutoCodeArray = CodeLength != -1
+                                    && encoder.Shorten(OriginAutoCodeArray, CodeLength, out var now)
+                                        ? now : [];
                     OnPropertyChanged(nameof(CodeLengthIndex));
-                    OnPropertyChanged(nameof(CodeLength));
                 }
             }
         }
@@ -184,12 +188,13 @@ namespace RimeTyrant.Tools
                 {
                     var prev = AutoCode;
                     _autoCodeArray = value;
-                    OnPropertyChanged(nameof(AutoCodeArray));
+                    // 根据上次的选择来确定这次的选择
                     AutoCodeIndex = prev is null
                         ? 0
                         : value.Select((str, idx) => new { str, idx })
                                .FirstOrDefault(item => item.str.StartsWith(prev) || prev.StartsWith(item.str))
                                ?.idx ?? 0;
+                    OnPropertyChanged(nameof(AutoCodeArray));
                 }
             }
         }
@@ -241,10 +246,9 @@ namespace RimeTyrant.Tools
                 if (_originAutoCodeArray != value)
                 {
                     _originAutoCodeArray = value;
-                    var now = CodeLength == -1
-                        ? value
-                        : value.Select(s => s[..CodeLength]);
-                    AutoCodeArray = [.. now.Distinct().Order()];
+                    AutoCodeArray = CodeLength != -1
+                                    && encoder.Shorten(value, CodeLength, out var now)
+                                        ? now : [];
                 }
             }
         }
@@ -345,7 +349,7 @@ namespace RimeTyrant.Tools
                 if (_originResultArray != value)
                 {
                     _originResultArray = value;
-                    ResultArray = value;
+                    ResultArray = value.Select(e => e.Clone()).ToArray();
                 }
             }
         }

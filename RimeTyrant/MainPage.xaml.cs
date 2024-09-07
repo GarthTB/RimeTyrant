@@ -14,6 +14,7 @@ namespace RimeTyrant
         {
             InitializeComponent();
             BindingContext = ui;
+            ui.encoder = encoder;
             ui.EncodeMethodArray = ["键道6", "<待续>"];
         }
 
