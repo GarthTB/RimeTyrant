@@ -10,10 +10,16 @@ namespace RimeTyrant.Tools
             try
             {
                 var option = new PickOptions() { PickerTitle = title };
-                var result = FilePicker.Default.PickAsync(option).Result?.FullPath;
 
-                return result is not null && result.EndsWith("dict.yaml", StringComparison.OrdinalIgnoreCase)
-                    ? result
+                var result = Task.Run(async () =>
+                {
+                    var file = await FilePicker.Default.PickAsync(option);
+                    return file?.FullPath;
+                });
+                var path = result.Result;
+
+                return path is not null && path.EndsWith("dict.yaml", StringComparison.OrdinalIgnoreCase)
+                    ? path
                     : string.Empty;
             }
             catch (Exception)
@@ -23,11 +29,13 @@ namespace RimeTyrant.Tools
         }
 
         public static void AutoLoadDict(Page page)
-            => _ = DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid()
-                ? page.DisplayAlert("提示", "已自动载入程序Rime默认目录中的词库", "好的")
-                : DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path)
-                    ? page.DisplayAlert("提示", $"已自动载入{path}中的词库", "好的")
-                    : page.DisplayAlert("提示", "未能自动载入词库", "好的");
+        {
+            if (DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid())
+                Simp.Show(page, "已自动载入程序Rime默认目录中的词库");
+            else if (DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path))
+                Simp.Show(page, $"已自动载入{path}中的词库");
+            else Simp.Show(page, "未能自动载入词库，请手动载入");
+        }
 
         private static bool AutoLoadDictAndroid()
         {
@@ -74,18 +82,31 @@ namespace RimeTyrant.Tools
                         .Where(f => f.EndsWith("dict.yaml", StringComparison.OrdinalIgnoreCase))
                         .ToArray();
 
-        public static bool LoadDict(string path) => Try.Do(() => Dict.Load(path));
+        public static bool LoadDict(string path) => Simp.Try(() => Dict.Load(path));
 
-        public static bool LoadSingle(string fileName, string codeName, Initializer Initialize, Page page, out Code? code)
+        public static Code? LoadSingle(string fileName, string codeName, Initializer Initialize, Page page)
         {
-            if (!AutoLoadSamePath(fileName, out var filePath)
-                || !TryLoadCode(filePath, Initialize, out code))
+            if (AutoLoadSamePath(fileName, out var filePath)
+                && TryLoadCode(filePath, Initialize, out Code? code))
             {
-                _ = page.DisplayAlert("提示", $"未能自动找到{codeName}词库，请手动选择", "好的");
-                filePath = PickYaml("选择一个以dict.yaml结尾的单字文件");
-                return TryLoadCode(filePath, Initialize, out code);
+                Simp.Show(page, $"已自动载入词库同目录中的{codeName}单字库");
+                return code;
             }
-            else return true;
+            else
+            {
+                Simp.Show(page, $"未能自动找到{codeName}单字库，请手动选择");
+                filePath = PickYaml("选择一个以dict.yaml结尾的单字文件");
+                if (TryLoadCode(filePath, Initialize, out code))
+                {
+                    Simp.Show(page, $"成功载入指定的单字库");
+                    return code;
+                }
+                else
+                {
+                    Simp.Show(page, $"载入指定的单字库失败");
+                    return null;
+                }
+            }
         }
 
         /// <summary>

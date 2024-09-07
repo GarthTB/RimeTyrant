@@ -136,9 +136,9 @@ namespace RimeTyrant.Tools
         }
 
         public string? EncodeMethod
-            => EncodeMethodArray.Length < EncodeMethodIndex - 1
-                ? null
-                : EncodeMethodArray[EncodeMethodIndex];
+            => EncodeMethodArray.Length > EncodeMethodIndex
+                ? EncodeMethodArray[EncodeMethodIndex]
+                : null;
 
         public int[] ValidCodeLengthArray
         {
@@ -171,9 +171,9 @@ namespace RimeTyrant.Tools
         }
 
         public int CodeLength
-            => ValidCodeLengthArray.Length < CodeLengthIndex - 1
-                ? -1
-                : ValidCodeLengthArray[CodeLengthIndex];
+            => ValidCodeLengthArray.Length > CodeLengthIndex
+                ? ValidCodeLengthArray[CodeLengthIndex]
+                : -1;
 
         public string[] AutoCodeArray
         {
@@ -205,9 +205,9 @@ namespace RimeTyrant.Tools
         }
 
         public string? AutoCode
-            => AutoCodeArray.Length < AutoCodeIndex
-                ? null
-                : AutoCodeArray[AutoCodeIndex];
+            => AutoCodeArray.Length > AutoCodeIndex
+                ? AutoCodeArray[AutoCodeIndex]
+                : null;
 
         /// <summary>
         /// 自动编码下拉菜单框里的文字颜色，当空时，使用默认颜色

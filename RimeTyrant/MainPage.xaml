@@ -133,7 +133,7 @@
                     x:Name="ReloadBtn"
                     Grid.Column="0"
                     Clicked="ReloadBtn_Clicked"
-                    Text="重载词库" />
+                    Text="载入词库" />
                 <Button
                     x:Name="LogBtn"
                     Grid.Column="1"

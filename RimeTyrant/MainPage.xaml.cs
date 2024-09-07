@@ -29,13 +29,13 @@ namespace RimeTyrant
             var dict = FileLoader.PickYaml("选择一个以dict.yaml结尾的词库文件");
             if (!string.IsNullOrEmpty(dict) && FileLoader.LoadDict(dict))
             {
-                _ = DisplayAlert("提示", "载入成功！", "好的");
+                Simp.Show(this, "载入成功！");
                 ui.WordToAdd = string.Empty;
                 ui.ManualCode = string.Empty;
                 ui.Priority = string.Empty;
                 ui.CodeToSearch = string.Empty;
             }
-            else _ = DisplayAlert("提示", "未载入词库文件！", "好的");
+            else Simp.Show(this, "未载入词库文件！");
         }
 
         private void LogBtn_Clicked(object sender, EventArgs e)
@@ -62,7 +62,7 @@ namespace RimeTyrant
                     ? "IndianRed"
                     : string.Empty;
 
-                if (ui.UseAutoEncode && ui.EncodeMethod is not null && encoder.Ready(ui.EncodeMethod))
+                if (ui.UseAutoEncode)
                     LoadAutoCodes();
             }
             else ui.AutoCodeArray = [];
@@ -87,11 +87,8 @@ namespace RimeTyrant
 
         private void InitializeEncoder()
         {
-            if (ui.UseAutoEncode && ui.EncodeMethod is not null)
-            {
-                _ = encoder.SetCode(ui.EncodeMethod, this, out var array);
-                ui.ValidCodeLengthArray = array;
-            }
+            if (Dict.Loaded && ui.UseAutoEncode && ui.EncodeMethod is not null)
+                ui.ValidCodeLengthArray = encoder.SetCode(ui.EncodeMethod, this);
         }
 
         private void LoadAutoCodes()
