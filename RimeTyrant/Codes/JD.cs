@@ -5,6 +5,12 @@
     /// </summary>
     internal class JD(string path) : Code(path)
     {
+        public override bool IsValidWord(string? word)
+            => !string.IsNullOrWhiteSpace(word);
+
+        public override bool IsValidCode(string? code)
+            => !string.IsNullOrWhiteSpace(code);
+
         protected override bool FindBlank(string[] codes, string prefix, out string code)
         {
             code = string.Empty;

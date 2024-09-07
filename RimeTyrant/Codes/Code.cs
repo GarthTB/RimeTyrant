@@ -4,7 +4,7 @@ using System.Text;
 namespace RimeTyrant.Codes
 {
     /// <summary>
-    /// 所有编码方案的基类，一共5个需要实现的方法
+    /// 所有编码方案的基类，一共7个需要实现的方法
     /// </summary>
     internal abstract class Code
     {
@@ -41,6 +41,14 @@ namespace RimeTyrant.Codes
         public bool Contains(char c) => Dict.Any(e => e.Word == c.ToString());
 
         public bool Contains(string c) => Dict.Any(e => e.Word == c);
+
+        #endregion
+
+        #region 判断词和码的有效性
+
+        public abstract bool IsValidWord(string? word);
+
+        public abstract bool IsValidCode(string? code);
 
         #endregion
 

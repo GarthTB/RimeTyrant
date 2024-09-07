@@ -44,6 +44,16 @@ namespace RimeTyrant.Tools
                && _code.AllowAutoCode
                && _code.Contains(s);
 
+        public bool IsValidWord(string? word)
+            => _code is not null
+               && _code.AllowAutoCode
+               && _code.IsValidWord(word);
+
+        public bool IsValidCode(string? code)
+            => _code is not null
+               && _code.AllowAutoCode
+               && _code.IsValidCode(code);
+
         public bool Lengthen(string word, string prefix, out string code)
         {
             code = string.Empty;

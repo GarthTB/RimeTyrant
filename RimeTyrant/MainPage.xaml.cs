@@ -55,8 +55,7 @@ namespace RimeTyrant
 
         private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(ui.WordToAdd)
-                && Text.IsValidWord(ui.WordToAdd))
+            if (encoder.IsValidWord(ui.WordToAdd))
             {
                 ui.WordColor = Dict.HasWord(ui.WordToAdd)
                     ? "IndianRed"
@@ -92,8 +91,8 @@ namespace RimeTyrant
         /// </summary>
         private void CheckAddBtn()
             => ui.AllowAdd = Dict.Loaded
-                             && ((ui.UseAutoEncode && ui.AutoCode is not null && Text.IsValidCode(ui.AutoCode))
-                             || (ui.UseManualEncode && Text.IsValidCode(ui.ManualCode)));
+                             && ((ui.UseAutoEncode && encoder.IsValidCode(ui.AutoCode))
+                             || (ui.UseManualEncode && encoder.IsValidCode(ui.ManualCode)));
 
         /// <summary>
         /// 初始化自动编码器，仅由两个控件触发：勾选自动编码、编码方案选单
