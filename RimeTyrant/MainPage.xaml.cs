@@ -22,20 +22,20 @@ namespace RimeTyrant
         #region 加载、保存、日志
 
         private void MainPage_Loaded(object sender, EventArgs e)
-            => FileLoader.AutoLoadDict(this);
+            => FileLoader.AutoLoadDict();
 
         private void ReloadBtn_Clicked(object sender, EventArgs e)
         {
             var dict = FileLoader.PickYaml("选择一个以dict.yaml结尾的词库文件");
             if (!string.IsNullOrEmpty(dict) && FileLoader.LoadDict(dict))
             {
-                Simp.Show(this, "载入成功！");
+                Simp.Show("载入成功！");
                 ui.WordToAdd = string.Empty;
                 ui.ManualCode = string.Empty;
                 ui.Priority = string.Empty;
                 ui.CodeToSearch = string.Empty;
             }
-            else Simp.Show(this, "未载入词库文件！");
+            else Simp.Show("未载入词库文件！");
         }
 
         private void LogBtn_Clicked(object sender, EventArgs e)
@@ -60,12 +60,12 @@ namespace RimeTyrant
             {
                 ui.WordColor = Dict.HasWord(ui.WordToAdd)
                     ? "IndianRed"
-                    : string.Empty;
+                    : CodeToSearch.TextColor.ToHex();
 
                 if (ui.UseAutoEncode)
                     LoadAutoCodes();
             }
-            else ui.AutoCodeArray = [];
+            else ui.OriginAutoCodeArray = [];
             CheckAddBtn();
         }
 
@@ -76,24 +76,48 @@ namespace RimeTyrant
         private void UseAutoEncode_CheckedChanged(object sender, CheckedChangedEventArgs e)
             => InitializeEncoder();
 
+        private void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            InitializeEncoder();
+            if (ui.EncodeMethod is not null && encoder.Ready(ui.EncodeMethod))
+                LoadAutoCodes();
+        }
+
         #endregion
 
         #region 涉及多个控件的逻辑
 
+        /// <summary>
+        /// 检查是否允许添加词，仅由三个控件触发：加词框、自动编码选单、手动编码框
+        /// </summary>
         private void CheckAddBtn()
             => ui.AllowAdd = Dict.Loaded
                              && ((ui.UseAutoEncode && ui.AutoCode is not null && Text.IsValidCode(ui.AutoCode))
                              || (ui.UseManualEncode && Text.IsValidCode(ui.ManualCode)));
 
+        /// <summary>
+        /// 初始化自动编码器，仅由两个控件触发：勾选自动编码、编码方案选单
+        /// </summary>
         private void InitializeEncoder()
         {
-            if (Dict.Loaded && ui.UseAutoEncode && ui.EncodeMethod is not null)
-                ui.ValidCodeLengthArray = encoder.SetCode(ui.EncodeMethod, this);
+            if (Dict.Loaded
+                && ui.UseAutoEncode
+                && ui.EncodeMethod is not null
+                && !encoder.Ready(ui.EncodeMethod))
+                (ui.ValidCodeLengthArray, ui.CodeLengthIndex) = encoder.SetCode(ui.EncodeMethod);
         }
 
+        /// <summary>
+        /// 加载自动编码，仅由四个控件触发：加词框、勾选自动编码、编码方案选单、码长选单
+        /// </summary>
         private void LoadAutoCodes()
         {
-
+            if (Dict.Loaded
+                && ui.UseAutoEncode
+                && ui.EncodeMethod is not null
+                && encoder.Ready(ui.EncodeMethod)
+                && encoder.Encode(ui.WordToAdd, out var codes))
+                ui.OriginAutoCodeArray = codes;
         }
 
         #endregion

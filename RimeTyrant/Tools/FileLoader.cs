@@ -28,13 +28,13 @@ namespace RimeTyrant.Tools
             }
         }
 
-        public static void AutoLoadDict(Page page)
+        public static void AutoLoadDict()
         {
             if (DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid())
-                Simp.Show(page, "已自动载入程序Rime默认目录中的词库");
+                Simp.Show("已自动载入程序Rime默认目录中的词库");
             else if (DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path))
-                Simp.Show(page, $"已自动载入{path}中的词库");
-            else Simp.Show(page, "未能自动载入词库，请手动载入");
+                Simp.Show($"已自动载入{path}中的词库");
+            else Simp.Show("未能自动载入词库，请手动载入");
         }
 
         private static bool AutoLoadDictAndroid()
@@ -84,29 +84,29 @@ namespace RimeTyrant.Tools
 
         public static bool LoadDict(string path) => Simp.Try(() => Dict.Load(path));
 
-        public static Code? LoadSingle(string fileName, string codeName, Initializer Initialize, Page page)
+        public static Code? LoadSingle(string fileName, string codeName, Initializer Initialize)
         {
             if (AutoLoadSamePath(fileName, out var filePath)
                 && TryLoadCode(filePath, Initialize, out Code? code))
             {
-                Simp.Show(page, $"已自动载入词库同目录中的{codeName}单字库");
+                Simp.Show($"已自动载入词库同目录中的{codeName}单字库");
                 return code;
             }
-            else
+            // 不知道为什么，这行提示总是在手动选择之后才显示
+            Simp.Show($"未能自动找到{codeName}单字库，请手动选择");
+            return ManualLoadSingle(Initialize);
+        }
+
+        private static Code? ManualLoadSingle(Initializer Initialize)
+        {
+            var filePath = PickYaml("选择一个以dict.yaml结尾的单字文件");
+            if (TryLoadCode(filePath, Initialize, out Code? code))
             {
-                Simp.Show(page, $"未能自动找到{codeName}单字库，请手动选择");
-                filePath = PickYaml("选择一个以dict.yaml结尾的单字文件");
-                if (TryLoadCode(filePath, Initialize, out code))
-                {
-                    Simp.Show(page, $"成功载入指定的单字库");
-                    return code;
-                }
-                else
-                {
-                    Simp.Show(page, $"载入指定的单字库失败");
-                    return null;
-                }
+                Simp.Show("成功载入指定的单字库");
+                return code;
             }
+            Simp.Show("载入指定的单字库失败，自动编码将不可用");
+            return null;
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace RimeTyrant.Tools
         {
             filePath = string.Empty;
             var dir = Directory.GetParent(Dict.Path);
-            if (Dict.Loaded || !File.Exists(Dict.Path) || dir is null)
+            if (!Dict.Loaded || !File.Exists(Dict.Path) || dir is null)
                 return false;
             filePath = Path.Combine(dir.FullName, fileName);
             return File.Exists(filePath);

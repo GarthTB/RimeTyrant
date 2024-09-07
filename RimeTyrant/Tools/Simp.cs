@@ -24,8 +24,12 @@
         /// <summary>
         /// 显示一个提示框
         /// </summary>
-        public static void Show(Page page, string message)
-            => MainThread.BeginInvokeOnMainThread(
-                async () => await page.DisplayAlert("提示", message, "好的"));
+        public static void Show(string message)
+            => MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                var currentPage = Application.Current?.MainPage;
+                if (currentPage is not null)
+                    await currentPage.DisplayAlert("提示", message, "好的");
+            });
     }
 }

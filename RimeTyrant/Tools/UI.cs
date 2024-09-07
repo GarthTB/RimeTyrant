@@ -22,17 +22,17 @@ namespace RimeTyrant.Tools
         private string[] _encodeMethodArray = [];
 
         // 0：键道6
-        private int _encodeMethodIndex = 0;
+        private int _encodeMethodIndex = -1;
 
         private int[] _validCodeLengthArray = [];
 
         // 是码长序号，不是码长
-        private int _codeLengthIndex = 0;
+        private int _codeLengthIndex = -1;
 
         private string[] _autoCodeArray = [];
 
         // 是自动编码序号，不是编码
-        private int _autoCodeIndex = 0;
+        private int _autoCodeIndex = -1;
 
         private string _autoCodeColor = string.Empty;
 
@@ -136,7 +136,7 @@ namespace RimeTyrant.Tools
         }
 
         public string? EncodeMethod
-            => EncodeMethodArray.Length > EncodeMethodIndex
+            => EncodeMethodIndex >= 0 && EncodeMethodArray.Length > EncodeMethodIndex
                 ? EncodeMethodArray[EncodeMethodIndex]
                 : null;
 
@@ -171,19 +171,25 @@ namespace RimeTyrant.Tools
         }
 
         public int CodeLength
-            => ValidCodeLengthArray.Length > CodeLengthIndex
+            => CodeLengthIndex >= 0 && ValidCodeLengthArray.Length > CodeLengthIndex
                 ? ValidCodeLengthArray[CodeLengthIndex]
                 : -1;
 
         public string[] AutoCodeArray
         {
             get => _autoCodeArray;
-            set
+            private set
             {
                 if (_autoCodeArray != value)
                 {
+                    var prev = AutoCode;
                     _autoCodeArray = value;
                     OnPropertyChanged(nameof(AutoCodeArray));
+                    AutoCodeIndex = prev is null
+                        ? 0
+                        : value.Select((str, idx) => new { str, idx })
+                               .FirstOrDefault(item => item.str.StartsWith(prev) || prev.StartsWith(item.str))
+                               ?.idx ?? 0;
                 }
             }
         }
@@ -205,7 +211,7 @@ namespace RimeTyrant.Tools
         }
 
         public string? AutoCode
-            => AutoCodeArray.Length > AutoCodeIndex
+            => AutoCodeIndex >= 0 && AutoCodeArray.Length > AutoCodeIndex
                 ? AutoCodeArray[AutoCodeIndex]
                 : null;
 
@@ -236,7 +242,7 @@ namespace RimeTyrant.Tools
                 {
                     _originAutoCodeArray = value;
                     var now = CodeLength == -1
-                        ? value.Select(s => new string(s))
+                        ? value
                         : value.Select(s => s[..CodeLength]);
                     AutoCodeArray = [.. now.Distinct().Order()];
                 }
@@ -349,7 +355,7 @@ namespace RimeTyrant.Tools
         public Item[] ResultArray
         {
             get => _resultArray;
-            set
+            private set
             {
                 if (_resultArray != value)
                 {

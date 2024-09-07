@@ -1,18 +1,16 @@
 ﻿namespace RimeTyrant.Codes
 {
     /// <summary>
-    /// 星空键道6，2024版
+    /// 星空键道6，2024年的规则
     /// </summary>
     internal class JD(string path) : Code(path)
     {
-        protected override bool FindBlank(char[][] codes, string prefix, out string code)
+        protected override bool FindBlank(string[] codes, string prefix, out string code)
         {
             code = string.Empty;
-            var _codes = codes.Select(x => new string(x))
-                              .Where(s => s.StartsWith(prefix))
+            var _codes = codes.Where(s => s.StartsWith(prefix))
                               .Distinct()
                               .ToArray();
-
             if (_codes.Length != 1)
                 return false;
 
@@ -21,6 +19,17 @@
                 if (!Tools.Dict.HasCode(result[..i]))
                     code = result[..i];
             code = result;
+            return true;
+        }
+
+        protected override bool Shorten(string fullCode, int length, out string shortCode)
+        {
+            if (length < 0 || length > fullCode.Length)
+            {
+                shortCode = fullCode;
+                return false;
+            }
+            shortCode = fullCode[..length];
             return true;
         }
 
@@ -38,41 +47,36 @@
             keyElements = new char[keyChars.Length][][];
             for (int i = 0; i < keyChars.Length; i++)
                 keyElements[i] = Dict.Where(e => e.Code.Length > 3 && e.Word == keyChars[i].ToString())
-                                     .Select(e => e.Code.ToCharArray(0, 3))
+                                     .Select(e => e.Code[..3])
                                      .Distinct()
+                                     .Select(x => x.ToArray())
                                      .ToArray();
             return keyElements.All(x => x.Length > 0);
         }
 
-        protected override bool CodesOf(char[][][] keyElements, out char[][] codes)
+        protected override bool CodesOf(char[][][] keyElements, out string[] codes)
         {
-            var _codes = new List<char[]>();
+            HashSet<char> Choose(int i, int j) => keyElements[i].Select(x => x[j]).ToHashSet();
 
-            switch (keyElements.Length)
+            string[] Compose(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l)
             {
-                case 2:
-                    foreach (var c1 in keyElements[0])
-                        foreach (var c2 in keyElements[1])
-                            _codes.Add([c1[0], c1[1], c2[0], c2[1], c1[2], c2[2]]);
-                    break;
-
-                case 3:
-                    foreach (var c1 in keyElements[0])
-                        foreach (var c2 in keyElements[1])
-                            foreach (var c3 in keyElements[2])
-                                _codes.Add([c1[0], c2[0], c3[0], c1[2], c2[2], c3[2]]);
-                    break;
-
-                default:
-                    foreach (var c1 in keyElements[0])
-                        foreach (var c2 in keyElements[1])
-                            foreach (var c3 in keyElements[2])
-                                foreach (var c4 in keyElements[3])
-                                    _codes.Add([c1[0], c2[0], c3[0], c4[0], c1[2], c2[2]]);
-                    break;
+                HashSet<string> result = [];
+                foreach (var c1 in Choose(a, b))
+                    foreach (var c2 in Choose(c, d))
+                        foreach (var c3 in Choose(e, f))
+                            foreach (var c4 in Choose(g, h))
+                                foreach (var c5 in Choose(i, j))
+                                    foreach (var c6 in Choose(k, l))
+                                        _ = result.Add($"{c1}{c2}{c3}{c4}{c5}{c6}");
+                return [.. result.Order()];
             }
 
-            codes = _codes.Distinct().ToArray();
+            codes = keyElements.Length switch
+            {
+                2 => Compose(0, 0, 0, 1, 1, 0, 1, 1, 0, 2, 1, 2),
+                3 => Compose(0, 0, 1, 0, 2, 0, 0, 2, 1, 2, 2, 2),
+                _ => Compose(0, 0, 1, 0, 2, 0, 3, 0, 0, 2, 1, 2),
+            };
             return codes.Length > 0;
         }
     }

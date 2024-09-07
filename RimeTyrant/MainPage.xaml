@@ -37,9 +37,9 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Placeholder="待添加的词"
-                TextColor="{Binding WordColor, Mode=TwoWay}"
                 Text="{Binding WordToAdd, Mode=TwoWay}"
-                TextChanged="WordToAdd_TextChanged" />
+                TextChanged="WordToAdd_TextChanged"
+                TextColor="{Binding WordColor, Mode=TwoWay}" />
 
             <Grid Grid.Row="2" Grid.Column="1">
                 <Grid.ColumnDefinitions>
@@ -51,16 +51,17 @@
 
                 <CheckBox
                     x:Name="UseAutoEncode"
-                    CheckedChanged="UseAutoEncode_CheckedChanged"
                     Grid.Column="0"
+                    CheckedChanged="UseAutoEncode_CheckedChanged"
                     IsChecked="{Binding UseAutoEncode, Mode=TwoWay}" />
 
                 <Picker
-                    x:Name="AutoEncodeMethod"
+                    x:Name="EncodeMethod"
                     Grid.Column="1"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding EncodeMethodArray, Mode=TwoWay}"
                     SelectedIndex="{Binding EncodeMethodIndex, Mode=TwoWay}"
+                    SelectedIndexChanged="EncodeMethod_SelectedIndexChanged"
                     Title="编码方案" />
 
                 <Picker
@@ -84,19 +85,19 @@
                 <Picker
                     x:Name="AutoCode"
                     Grid.Column="0"
-                    TextColor="{Binding AutoCodeColor, Mode=TwoWay}"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding AutoCodeArray, Mode=TwoWay}"
-                    SelectedIndex="{Binding AutoCodeIndex, Mode=TwoWay}" />
+                    SelectedIndex="{Binding AutoCodeIndex, Mode=TwoWay}"
+                    TextColor="{Binding AutoCodeColor, Mode=TwoWay}" />
 
                 <Entry
                     x:Name="ManualEncode"
                     Grid.Column="1"
-                    TextColor="{Binding ManualCodeColor, Mode=TwoWay}"
                     IsEnabled="{Binding UseManualEncode, Mode=TwoWay}"
                     MaxLength="12"
                     Placeholder="手动编码"
-                    Text="{Binding ManualCode, Mode=TwoWay}" />
+                    Text="{Binding ManualCode, Mode=TwoWay}"
+                    TextColor="{Binding ManualCodeColor, Mode=TwoWay}" />
             </Grid>
 
             <Grid Grid.Row="4" Grid.Column="1">

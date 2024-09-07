@@ -4,7 +4,7 @@ using System.Text;
 namespace RimeTyrant.Codes
 {
     /// <summary>
-    /// 所有编码的基类，一共4个需要实现的方法
+    /// 所有编码方案的基类，一共5个需要实现的方法
     /// </summary>
     internal abstract class Code
     {
@@ -49,20 +49,38 @@ namespace RimeTyrant.Codes
         public bool Lengthen(string word, string prefix, out string code)
         {
             code = string.Empty;
-            return Encode(word, out char[][] codes)
+            return Encode(word, out string[] codes)
                    && FindBlank(codes, prefix, out code);
         }
 
         /// <summary>
         /// 加长编码到剩余的最短空位，用于截短功能
         /// </summary>
-        protected abstract bool FindBlank(char[][] codes, string prefix, out string code);
+        protected abstract bool FindBlank(string[] codes, string prefix, out string code);
+
+        #endregion
+
+        #region 获取简码
+
+        public bool Shorten(string[] fullCodes, int length, out string[] shortCodes)
+        {
+            shortCodes = new string[fullCodes.Length];
+            for (int i = 0; i < fullCodes.Length; i++)
+                if (!Shorten(fullCodes[i], length, out shortCodes[i]))
+                    return false;
+            return true;
+        }
+
+        /// <summary>
+        /// 用全码推导出指定长度的简码
+        /// </summary>
+        protected abstract bool Shorten(string fullCode, int length, out string shortCode);
 
         #endregion
 
         #region 自动编码
 
-        public bool Encode(string word, out char[][] codes)
+        public bool Encode(string word, out string[] codes)
         {
             codes = [];
             return GetKeyChars(word, out char[] keyChars)
@@ -71,12 +89,12 @@ namespace RimeTyrant.Codes
         }
 
         /// <summary>
-        /// 提取一个词中所有用于编码的关键字符
+        /// 提取一个词中所有参与编码的关键字符
         /// </summary>
         protected abstract bool GetKeyChars(string originWord, out char[] keyChars);
 
         /// <summary>
-        /// 提取关键字符对应的编码中所有参与编码的码元
+        /// 提取每个关键字符的编码中，参与编码的码元
         /// </summary>
         /// <param name="keyElements">
         /// 第一维是每个关键字，第二维是一个关键字的每个全码，第三维是一个全码中每个参与编码的码元
@@ -86,7 +104,10 @@ namespace RimeTyrant.Codes
         /// <summary>
         /// 根据提取的码元编码
         /// </summary>
-        protected abstract bool CodesOf(char[][][] keyElements, out char[][] codes);
+        /// <param name="keyElements">
+        /// 第一维是每个关键字，第二维是一个关键字的每个全码，第三维是一个全码中每个参与编码的码元
+        /// </param>
+        protected abstract bool CodesOf(char[][][] keyElements, out string[] codes);
 
         #endregion
     }
