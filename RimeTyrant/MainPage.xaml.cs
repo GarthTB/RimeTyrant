@@ -10,6 +10,8 @@ namespace RimeTyrant
 
         private readonly Encoder encoder = new();
 
+        private readonly LogPage logPage = new();
+
         public MainPage()
         {
             InitializeComponent();
@@ -23,7 +25,10 @@ namespace RimeTyrant
         #region 加载、保存、日志
 
         private void MainPage_Loaded(object sender, EventArgs e)
-            => FileLoader.AutoLoadDict();
+        {
+            if (!Dict.Loaded)
+                FileLoader.AutoLoadDict();
+        }
 
         private async void ReloadBtn_Clicked(object sender, EventArgs e)
         {
@@ -39,10 +44,8 @@ namespace RimeTyrant
             else Simp.Show("未载入词库文件！");
         }
 
-        private void LogBtn_Clicked(object sender, EventArgs e)
-        {
-            // 显示日志页
-        }
+        private async void LogBtn_Clicked(object sender, EventArgs e)
+            => await Navigation.PushAsync(logPage);
 
         private void ModBtn_Clicked(object sender, EventArgs e)
         {
@@ -189,6 +192,7 @@ namespace RimeTyrant
                 ui.CodeToSearch = string.Empty; // 清空编码框
                 ui.CodeToSearch = code; // 重新搜索，相当于刷新
                 ui.AllowAdd = false; // 避免重复添加
+                ui.AllowMod = true;
             }
         }
 

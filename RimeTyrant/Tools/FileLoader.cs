@@ -10,7 +10,9 @@ namespace RimeTyrant.Tools
         {
             try
             {
-                return await Simp.GetFile(title);
+                var option = new PickOptions() { PickerTitle = title };
+                var result = await FilePicker.PickAsync(option);
+                return result?.FullPath ?? string.Empty;
             }
             catch (Exception)
             {
@@ -19,13 +21,11 @@ namespace RimeTyrant.Tools
         }
 
         public static void AutoLoadDict()
-        {
-            if (DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid())
-                Simp.Show("已自动载入程序Rime默认目录中的词库");
-            else if (DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path))
-                Simp.Show($"已自动载入{path}中的词库");
-            else Simp.Show("未能自动载入词库，请手动载入");
-        }
+            => Simp.Show(DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid()
+                ? "已自动载入程序Rime默认目录中的词库"
+                : DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path)
+                ? $"已自动载入{path}中的词库"
+                : "未能自动载入词库，请手动载入");
 
         private static bool AutoLoadDictAndroid()
         {

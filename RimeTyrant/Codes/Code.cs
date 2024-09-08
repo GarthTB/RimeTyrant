@@ -34,6 +34,7 @@ namespace RimeTyrant.Codes
             }
             if (Dict.Count == 0)
                 throw new Exception("单字文件为空！");
+            Logger.Add($"单字：{path}");
         }
 
         #region 查字是否存在

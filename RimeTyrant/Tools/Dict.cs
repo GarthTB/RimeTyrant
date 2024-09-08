@@ -6,6 +6,7 @@ namespace RimeTyrant.Tools
     {
         private static readonly HashSet<Item> _dict = [];
         private static readonly List<string> _shit = [];
+
         public static string Path { get; private set; } = string.Empty;
 
         public static bool Loaded => _dict.Count > 0;
@@ -34,12 +35,13 @@ namespace RimeTyrant.Tools
             if (_dict.Count == 0)
                 throw new Exception("词库文件为空！");
             Path = path;
+            Logger.Add($"词库：{path}");
         }
 
         public static void Save(string? path = null)
         {
             if (Path.Length == 0)
-                return;
+                throw new Exception("未加载词库！");
             path ??= Path;
             using StreamWriter sw = new(path, false, Encoding.UTF8);
             if (_shit.Count > 0)
@@ -59,6 +61,7 @@ namespace RimeTyrant.Tools
                 throw new Exception("词库中已存在该词条！未添加！");
             if (!_dict.Add(entry))
                 throw new Exception($"无法添加词条：{entry.Word} {entry.Code} {entry.Priority}");
+            Logger.Add("添加", entry);
         }
 
         public static void AddAll(Item[] entries)
@@ -71,6 +74,7 @@ namespace RimeTyrant.Tools
         {
             if (_dict.RemoveWhere(e => e.Equals(entry)) < 1)
                 throw new Exception($"找不到词条：{entry.Word} {entry.Code} {entry.Priority}");
+            Logger.Add("删除", entry);
         }
 
         public static void RemoveAll(Item[] entries)

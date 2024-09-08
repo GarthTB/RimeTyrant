@@ -229,7 +229,7 @@
                     Grid.Column="2"
                     Clicked="ModBtn_Clicked"
                     IsEnabled="{Binding AllowMod, Mode=TwoWay}"
-                    Text="应用修改" />
+                    Text="保存修改" />
             </Grid>
         </Grid>
 
