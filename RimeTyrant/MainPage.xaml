@@ -85,20 +85,20 @@
                 <Picker
                     x:Name="AutoCode"
                     Grid.Column="0"
-                    SelectedIndexChanged="AutoCode_SelectedIndexChanged"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding AutoCodeArray, Mode=TwoWay}"
                     SelectedIndex="{Binding AutoCodeIndex, Mode=TwoWay}"
+                    SelectedIndexChanged="AutoCode_SelectedIndexChanged"
                     TextColor="{Binding AutoCodeColor, Mode=TwoWay}" />
 
                 <Entry
                     x:Name="ManualEncode"
                     Grid.Column="1"
-                    TextChanged="ManualEncode_TextChanged"
                     IsEnabled="{Binding UseManualEncode, Mode=TwoWay}"
                     MaxLength="12"
                     Placeholder="手动编码"
-                    Text="{Binding ManualCode, Mode=TwoWay}" />
+                    Text="{Binding ManualCode, Mode=TwoWay}"
+                    TextChanged="ManualEncode_TextChanged" />
             </Grid>
 
             <Grid Grid.Row="4" Grid.Column="1">
@@ -110,6 +110,7 @@
                 <CheckBox
                     x:Name="UsePriority"
                     Grid.Column="0"
+                    CheckedChanged="UsePriority_CheckedChanged"
                     IsChecked="{Binding UsePriority, Mode=TwoWay}" />
 
                 <Entry
@@ -118,7 +119,8 @@
                     IsEnabled="{Binding UsePriority, Mode=TwoWay}"
                     MaxLength="24"
                     Placeholder="优先级"
-                    Text="{Binding Priority, Mode=TwoWay}" />
+                    Text="{Binding Priority, Mode=TwoWay}"
+                    TextChanged="Priority_TextChanged" />
             </Grid>
 
             <Grid

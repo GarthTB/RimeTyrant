@@ -11,6 +11,11 @@
         public override bool IsValidCode(string? code)
             => !string.IsNullOrWhiteSpace(code);
 
+        public override bool IsValidPriority(string? priority)
+            => priority is not null
+               && ((int.TryParse(priority, out int num) && num >= 0)
+                   || priority.Length == 0);
+
         protected override bool FindBlank(string[] codes, string prefix, out string code)
         {
             code = string.Empty;
@@ -78,9 +83,9 @@
             }
             codes = keyElements.Length switch
             {
-                //                 这两位代表第2码：
-                //                 ┌─────从第1个字的所有码里
-                //                 │  ┌──取每个码的第2个码元
+                //                 ┌──┬───这两位代表第2码：
+                //                 ┌──────从第1个字的所有码里
+                //                 │  ┌───取每个码的第2个码元
                 2 => Compose(0, 0, 0, 1, 1, 0, 1, 1, 0, 2, 1, 2),
                 3 => Compose(0, 0, 1, 0, 2, 0, 0, 2, 1, 2, 2, 2),
                 _ => Compose(0, 0, 1, 0, 2, 0, 3, 0, 0, 2, 1, 2),

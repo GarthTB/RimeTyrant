@@ -64,6 +64,11 @@ namespace RimeTyrant.Tools
                && _code.AllowAutoCode
                && _code.IsValidCode(code);
 
+        public bool IsValidPriority(string? priority)
+            => _code is not null
+               && _code.AllowAutoCode
+               && _code.IsValidPriority(priority);
+
         public bool Lengthen(string word, string prefix, out string code)
         {
             code = string.Empty;

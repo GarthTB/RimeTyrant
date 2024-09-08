@@ -69,13 +69,15 @@ namespace RimeTyrant
         #region 自动编码
 
         private async void UseAutoEncode_CheckedChanged(object sender, CheckedChangedEventArgs e)
-            => await InitializeEncoder();
+        {
+            await InitializeEncoder();
+            LoadAutoCodes();
+        }
 
         private async void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
             await InitializeEncoder();
-            if (!string.IsNullOrEmpty(ui.EncodeMethod) && encoder.Ready(ui.EncodeMethod))
-                LoadAutoCodes();
+            LoadAutoCodes();
         }
 
         private void AutoCode_SelectedIndexChanged(object sender, EventArgs e)
@@ -96,15 +98,31 @@ namespace RimeTyrant
 
         #endregion
 
+        #region 输入优先级
+
+        private void UsePriority_CheckedChanged(object sender, CheckedChangedEventArgs e)
+            => CheckAddBtn();
+
+        private void Priority_TextChanged(object sender, TextChangedEventArgs e)
+            => CheckAddBtn();
+
+        #endregion
+
         #region 涉及多个控件的逻辑
 
         /// <summary>
-        /// 检查是否允许添加词，仅由三个控件触发：加词框、自动编码选单、手动编码框
+        /// 检查是否允许添加词，仅由四个控件触发：加词框、自动编码选单、手动编码框、勾选优先级、优先级框
         /// </summary>
         private void CheckAddBtn()
-            => ui.AllowAdd = Dict.Loaded
-                             && ((ui.UseAutoEncode && encoder.IsValidCode(ui.AutoCode))
-                             || (ui.UseManualEncode && encoder.IsValidCode(ui.ManualCode)));
+        {
+            var codeValid = (ui.UseAutoEncode && encoder.IsValidCode(ui.AutoCode))
+                            || (ui.UseManualEncode && encoder.IsValidCode(ui.ManualCode));
+            var priorityValid = !ui.UsePriority
+                                || (ui.UsePriority && encoder.IsValidPriority(ui.Priority));
+            ui.AllowAdd = Dict.Loaded
+                          && codeValid
+                          && priorityValid;
+        }
 
         /// <summary>
         /// 初始化自动编码器，仅由两个控件触发：勾选自动编码、编码方案选单
@@ -141,7 +159,7 @@ namespace RimeTyrant
         /// </summary>
         private void AutoSearch()
         {
-            if (ui.AllowAdd)
+            if (Dict.Loaded)
                 ui.CodeToSearch = ui.UseAutoEncode && !string.IsNullOrEmpty(ui.AutoCode)
                     ? ui.AutoCode
                     : ui.UseManualEncode && !string.IsNullOrEmpty(ui.ManualCode)
