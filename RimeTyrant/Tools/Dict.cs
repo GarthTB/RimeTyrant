@@ -88,10 +88,8 @@ namespace RimeTyrant.Tools
         public static bool HasEntry(Item entry)
             => _dict.Any(e => e.Equals(entry));
 
-        public static HashSet<Item> CodeStartsWith(string prefix)
-            => _dict.AsParallel()
-                    .Where(e => e.Code.StartsWith(prefix))
-                    .Select(e => e.Clone())
-                    .ToHashSet();
+        public static IEnumerable<Item> CodeStartsWith(string prefix)
+            => _dict.Where(e => e.Code.StartsWith(prefix))
+                    .Select(e => e.Clone());
     }
 }

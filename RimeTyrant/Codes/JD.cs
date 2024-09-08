@@ -62,7 +62,7 @@
 
         protected override bool CodesOf(char[][][] keyElements, out string[] codes)
         {
-            HashSet<char> Choose(int i, int j) => keyElements[i].Select(x => x[j]).ToHashSet();
+            IEnumerable<char> Choose(int i, int j) => keyElements[i].Select(x => x[j]);
 
             string[] Compose(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l)
             {
@@ -76,14 +76,16 @@
                                         _ = result.Add($"{c1}{c2}{c3}{c4}{c5}{c6}");
                 return [.. result.Order()];
             }
-
             codes = keyElements.Length switch
             {
+                //                 这两位代表第2码：
+                //                 ┌─────从第1个字的所有码里
+                //                 │  ┌──取每个码的第2个码元
                 2 => Compose(0, 0, 0, 1, 1, 0, 1, 1, 0, 2, 1, 2),
                 3 => Compose(0, 0, 1, 0, 2, 0, 0, 2, 1, 2, 2, 2),
                 _ => Compose(0, 0, 1, 0, 2, 0, 3, 0, 0, 2, 1, 2),
             };
-            return codes.Length > 0;
+            return codes.All(code => code.Length == 6);
         }
     }
 }

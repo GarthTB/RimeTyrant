@@ -186,13 +186,19 @@ namespace RimeTyrant.Tools
                 {
                     var prev = AutoCode;
                     _autoCodeArray = value;
-                    // 根据上次的选择来确定这次的选择
-                    AutoCodeIndex = string.IsNullOrEmpty(prev)
-                        ? -1
-                        : value.Select((str, idx) => new { str, idx })
-                               .FirstOrDefault(item => item.str.StartsWith(prev) || prev.StartsWith(item.str))
-                               ?.idx ?? -1;
                     OnPropertyChanged(nameof(AutoCodeArray));
+                    // 根据上次的选择来确定这次的选择
+                    AutoCodeIndex = value.Length switch
+                    {
+                        0 => -1,
+                        1 => 0,
+                        _ => prev is null
+                             ? 0
+                             : value.Select((str, idx) => new { str, idx })
+                                    .FirstOrDefault(item => item.str.StartsWith(prev) || prev.StartsWith(item.str))
+                                    ?.idx ?? 0
+                    };
+                    CodeToSearch = AutoCode ?? string.Empty;
                 }
             }
         }
@@ -317,16 +323,31 @@ namespace RimeTyrant.Tools
                 {
                     _codeToSearch = value;
                     OnPropertyChanged(nameof(CodeToSearch));
+                    Search(value);
                 }
             }
         }
+
+        private async void Search(string code)
+        {
+            if (!string.IsNullOrEmpty(code))
+            {
+                var result = await SearchAsync(code);
+                _ = await MainThread.InvokeOnMainThreadAsync(() => OriginResultArray = result);
+            }
+            else OriginResultArray = [];
+        }
+
+        private static async Task<Item[]> SearchAsync(string code)
+            => await Task.Run(()
+                => Dict.CodeStartsWith(code).OrderBy(x => x.Code).ToArray());
 
         private Item[] _originResultArray = [];
 
         public Item[] OriginResultArray
         {
             get => _originResultArray;
-            set
+            private set
             {
                 if (_originResultArray != value)
                 {

@@ -57,15 +57,10 @@ namespace RimeTyrant
         private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (encoder.IsValidWord(ui.WordToAdd))
-            {
                 ui.WordColor = Dict.HasWord(ui.WordToAdd)
                     ? "IndianRed"
                     : CodeToSearch.TextColor.ToHex();
-
-                if (ui.UseAutoEncode)
-                    LoadAutoCodes();
-            }
-            else ui.OriginAutoCodeArray = [];
+            LoadAutoCodes();
             CheckAddBtn();
         }
 
@@ -79,7 +74,7 @@ namespace RimeTyrant
         private async void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
             await InitializeEncoder();
-            if (!string.IsNullOrEmpty(ui.EncodeMethod)&& encoder.Ready(ui.EncodeMethod))
+            if (!string.IsNullOrEmpty(ui.EncodeMethod) && encoder.Ready(ui.EncodeMethod))
                 LoadAutoCodes();
         }
 
@@ -128,27 +123,31 @@ namespace RimeTyrant
         /// </summary>
         private void LoadAutoCodes()
         {
-            if (Dict.Loaded
-                && ui.UseAutoEncode
-                && !string.IsNullOrEmpty(ui.EncodeMethod)
-                && encoder.Ready(ui.EncodeMethod)
-                && encoder.Encode(ui.WordToAdd, out var codes))
-                ui.OriginAutoCodeArray = codes;
+            var load = Dict.Loaded
+                       && ui.UseAutoEncode
+                       && !string.IsNullOrEmpty(ui.EncodeMethod)
+                       && encoder.Ready(ui.EncodeMethod)
+                       && encoder.Encode(ui.WordToAdd, out var codes)
+                       ? codes : [];
+            ui.OriginAutoCodeArray = load;
             // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
-            ui.AutoCodeColor = ui.AutoCodeArray.Length > 1
+            ui.AutoCodeColor = load.Length > 1
                 ? "IndianRed"
                 : CodeToSearch.TextColor.ToHex();
         }
 
         /// <summary>
-        /// 自动编码，仅由两个控件触发：自动编码选单、手动编码框
+        /// 自动搜索，仅由两个控件触发：自动编码选单、手动编码框
         /// </summary>
         private void AutoSearch()
-            => ui.OriginResultArray = ui.UseAutoEncode && !string.IsNullOrEmpty(ui.AutoCode)
-                ? [.. Dict.CodeStartsWith(ui.AutoCode)]
-                : ui.UseManualEncode && !string.IsNullOrEmpty(ui.ManualCode)
-                    ? [.. Dict.CodeStartsWith(ui.ManualCode)]
-                    : [];
+        {
+            if (ui.AllowAdd)
+                ui.CodeToSearch = ui.UseAutoEncode && !string.IsNullOrEmpty(ui.AutoCode)
+                    ? ui.AutoCode
+                    : ui.UseManualEncode && !string.IsNullOrEmpty(ui.ManualCode)
+                    ? ui.ManualCode
+                    : string.Empty;
+        }
 
         #endregion
     }
