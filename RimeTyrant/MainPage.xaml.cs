@@ -79,8 +79,24 @@ namespace RimeTyrant
         private async void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
             await InitializeEncoder();
-            if (ui.EncodeMethod is not null && encoder.Ready(ui.EncodeMethod))
+            if (!string.IsNullOrEmpty(ui.EncodeMethod)&& encoder.Ready(ui.EncodeMethod))
                 LoadAutoCodes();
+        }
+
+        private void AutoCode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AutoSearch();
+            CheckAddBtn();
+        }
+
+        #endregion
+
+        #region 手动编码
+
+        private void ManualEncode_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            AutoSearch();
+            CheckAddBtn();
         }
 
         #endregion
@@ -102,7 +118,7 @@ namespace RimeTyrant
         {
             if (Dict.Loaded
                 && ui.UseAutoEncode
-                && ui.EncodeMethod is not null
+                && !string.IsNullOrEmpty(ui.EncodeMethod)
                 && !encoder.Ready(ui.EncodeMethod))
                 (ui.ValidCodeLengthArray, ui.CodeLengthIndex) = await encoder.SetCode(ui.EncodeMethod);
         }
@@ -114,11 +130,25 @@ namespace RimeTyrant
         {
             if (Dict.Loaded
                 && ui.UseAutoEncode
-                && ui.EncodeMethod is not null
+                && !string.IsNullOrEmpty(ui.EncodeMethod)
                 && encoder.Ready(ui.EncodeMethod)
                 && encoder.Encode(ui.WordToAdd, out var codes))
                 ui.OriginAutoCodeArray = codes;
+            // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
+            ui.AutoCodeColor = ui.AutoCodeArray.Length > 1
+                ? "IndianRed"
+                : CodeToSearch.TextColor.ToHex();
         }
+
+        /// <summary>
+        /// 自动编码，仅由两个控件触发：自动编码选单、手动编码框
+        /// </summary>
+        private void AutoSearch()
+            => ui.OriginResultArray = ui.UseAutoEncode && !string.IsNullOrEmpty(ui.AutoCode)
+                ? [.. Dict.CodeStartsWith(ui.AutoCode)]
+                : ui.UseManualEncode && !string.IsNullOrEmpty(ui.ManualCode)
+                    ? [.. Dict.CodeStartsWith(ui.ManualCode)]
+                    : [];
 
         #endregion
     }

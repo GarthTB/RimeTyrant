@@ -41,8 +41,6 @@ namespace RimeTyrant.Tools
 
         private string _manualCode = string.Empty;
 
-        private string _manualCodeColor = string.Empty;
-
         private string _Priority = string.Empty;
 
         #endregion
@@ -63,7 +61,7 @@ namespace RimeTyrant.Tools
         }
 
         /// <summary>
-        /// 加词框里的文字颜色，当空时，使用默认颜色
+        /// 加词框里的文字颜色，有该词则变红
         /// </summary>
         public string WordColor
         {
@@ -189,11 +187,11 @@ namespace RimeTyrant.Tools
                     var prev = AutoCode;
                     _autoCodeArray = value;
                     // 根据上次的选择来确定这次的选择
-                    AutoCodeIndex = prev is null
-                        ? 0
+                    AutoCodeIndex = string.IsNullOrEmpty(prev)
+                        ? -1
                         : value.Select((str, idx) => new { str, idx })
                                .FirstOrDefault(item => item.str.StartsWith(prev) || prev.StartsWith(item.str))
-                               ?.idx ?? 0;
+                               ?.idx ?? -1;
                     OnPropertyChanged(nameof(AutoCodeArray));
                 }
             }
@@ -221,7 +219,7 @@ namespace RimeTyrant.Tools
                 : null;
 
         /// <summary>
-        /// 自动编码下拉菜单框里的文字颜色，当空时，使用默认颜色
+        /// 自动编码下拉菜单框里的文字颜色，有多项则变红
         /// </summary>
         public string AutoCodeColor
         {
@@ -266,22 +264,6 @@ namespace RimeTyrant.Tools
                 {
                     _manualCode = value;
                     OnPropertyChanged(nameof(ManualCode));
-                }
-            }
-        }
-
-        /// <summary>
-        /// 手动编码框里的文字颜色，当空时，使用默认颜色
-        /// </summary>
-        public string ManualCodeColor
-        {
-            get => _manualCodeColor;
-            set
-            {
-                if (_manualCodeColor != value)
-                {
-                    _manualCodeColor = value;
-                    OnPropertyChanged(nameof(ManualCodeColor));
                 }
             }
         }
