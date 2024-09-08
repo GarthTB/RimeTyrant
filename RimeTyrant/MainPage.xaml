@@ -67,10 +67,10 @@
                 <Picker
                     x:Name="CodeLength"
                     Grid.Column="3"
-                    SelectedIndexChanged="CodeLength_SelectedIndexChanged"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding ValidCodeLengthArray, Mode=TwoWay}"
                     SelectedIndex="{Binding CodeLengthIndex, Mode=TwoWay}"
+                    SelectedIndexChanged="CodeLength_SelectedIndexChanged"
                     Title="码长" />
             </Grid>
 
@@ -198,10 +198,26 @@
                                     <ColumnDefinition Width="4*" />
                                     <ColumnDefinition Width="4" />
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Text="●" HorizontalOptions="Center" VerticalOptions="Center" />
-                                <Entry Grid.Column="1" Text="{Binding Word}" />
-                                <Entry Grid.Column="2" Text="{Binding Code}" />
-                                <Entry Grid.Column="3" Text="{Binding Priority}" MaxLength="16"/>
+                                <Label
+                                    Grid.Column="0"
+                                    HorizontalOptions="Center"
+                                    Text="●"
+                                    VerticalOptions="Center" />
+
+                                <Entry
+                                    Grid.Column="1"
+                                    Text="{Binding Word}"
+                                    TextChanged="Result_Modified" />
+                                <Entry
+                                    Grid.Column="2"
+                                    Text="{Binding Code}"
+                                    TextChanged="Result_Modified" />
+                                <Entry
+                                    Grid.Column="3"
+                                    MaxLength="16"
+                                    Text="{Binding Priority}"
+                                    TextChanged="Result_Modified" />
+
                             </Grid>
                         </ViewCell>
                     </DataTemplate>

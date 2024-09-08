@@ -43,8 +43,10 @@ namespace RimeTyrant
             }
         }
 
-        private async void LogBtn_Clicked(object sender, EventArgs e)
-            => await Navigation.PushAsync(logPage);
+        private void LogBtn_Clicked(object sender, EventArgs e)
+            => Navigation.PushAsync(logPage);
+
+        private bool Unsaved { get; set; } = false;
 
         private void ModBtn_Clicked(object sender, EventArgs e)
         {
@@ -197,7 +199,7 @@ namespace RimeTyrant
                 ui.CodeToSearch = string.Empty; // 清空编码框
                 ui.CodeToSearch = code; // 重新搜索，相当于刷新
                 ui.AllowAdd = false; // 避免重复添加
-                ui.AllowMod = true;
+                ui.AllowMod = Unsaved = true;
             }
         }
 
@@ -208,7 +210,24 @@ namespace RimeTyrant
         private void ResultArray_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
             ui.AllowDel = e.SelectedItem is Item;
-            ui.AllowCut = e.SelectedItem is Item && e.SelectedItemIndex > 0;
+            ui.AllowCut = e.SelectedItem is Item item
+                          && item.Code != ui.CodeToSearch;
+        }
+
+        #endregion
+
+        #region 改动了搜索结果
+
+        private void Result_Modified(object sender, TextChangedEventArgs e)
+        {
+            bool Modified()
+            {
+                for (int i = 0; i < ui.ResultArray.Length; i++)
+                    if (!ui.ResultArray[i].Equals(ui.OriginResultArray[i]))
+                        return true;
+                return false;
+            };
+            ui.AllowMod = Unsaved || Modified();
         }
 
         #endregion
