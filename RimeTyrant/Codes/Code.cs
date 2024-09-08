@@ -4,7 +4,7 @@ using System.Text;
 namespace RimeTyrant.Codes
 {
     /// <summary>
-    /// 所有编码方案的基类，一共8个需要实现的方法
+    /// 所有编码方案的基类，一共5个需要实现的方法
     /// </summary>
     internal abstract class Code
     {
@@ -44,13 +44,18 @@ namespace RimeTyrant.Codes
 
         #endregion
 
-        #region 判断词、码、优先级的有效性
+        #region 词、码、优先级的有效性（暂且认为是通用的，要改就改此文件、派生类、Encoder）
 
-        public abstract bool IsValidWord(string? word);
+        public static bool IsValidWord(string? word)
+            => !string.IsNullOrWhiteSpace(word);
 
-        public abstract bool IsValidCode(string? code);
+        public static bool IsValidCode(string? code)
+            => !string.IsNullOrWhiteSpace(code);
 
-        public abstract bool IsValidPriority(string? priority);
+        public static bool IsValidPriority(string? priority)
+            => priority is not null
+               && ((int.TryParse(priority, out int num) && num >= 0)
+                   || priority.Length == 0);
 
         #endregion
 

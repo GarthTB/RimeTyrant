@@ -72,7 +72,8 @@ namespace RimeTyrant.Tools
                         .Where(f => f.EndsWith("dict.yaml", StringComparison.OrdinalIgnoreCase))
                         .ToArray();
 
-        public static bool LoadDict(string path) => Simp.Try(() => Dict.Load(path));
+        public static bool LoadDict(string path)
+            => Simp.Try($"载入位于{path}的词库", () => Dict.Load(path));
 
         public static async Task<Code?> LoadSingle(string fileName, string codeName, Initializer Initialize)
         {
@@ -117,14 +118,14 @@ namespace RimeTyrant.Tools
             {
                 if (!File.Exists(filePath))
                     throw new FileNotFoundException();
-
                 code = Initialize(filePath);
             }
             catch (Exception)
             {
                 code = null;
             }
-            return code?.AllowAutoCode ?? false;
+            return code?.AllowAutoCode
+                   ?? false;
         }
     }
 }

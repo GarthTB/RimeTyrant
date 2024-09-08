@@ -146,6 +146,7 @@
                 <Button
                     x:Name="AddBtn"
                     Grid.Column="2"
+                    Clicked="AddBtn_Clicked"
                     IsEnabled="{Binding AllowAdd, Mode=TwoWay}"
                     Text="添加" />
             </Grid>

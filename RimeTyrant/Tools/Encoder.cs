@@ -57,17 +57,17 @@ namespace RimeTyrant.Tools
         public bool IsValidWord(string? word)
             => _code is not null
                && _code.AllowAutoCode
-               && _code.IsValidWord(word);
+               && Code.IsValidWord(word);
 
         public bool IsValidCode(string? code)
             => _code is not null
                && _code.AllowAutoCode
-               && _code.IsValidCode(code);
+               && Code.IsValidCode(code);
 
         public bool IsValidPriority(string? priority)
             => _code is not null
                && _code.AllowAutoCode
-               && _code.IsValidPriority(priority);
+               && Code.IsValidPriority(priority);
 
         public bool Lengthen(string word, string prefix, out string code)
         {

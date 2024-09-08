@@ -6,17 +6,18 @@
     internal static class Simp
     {
         /// <summary>
-        /// 尝试执行一个方法，如果发生异常则返回false
+        /// 尝试执行名为name的操作，如果发生异常则报错并返回false，否则什么都不显示并返回true
         /// </summary>
-        public static bool Try(Action action)
+        public static bool Try(string name, Action action)
         {
             try
             {
                 action();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Show($"{name}出错：\n{ex.Message}");
                 return false;
             }
         }

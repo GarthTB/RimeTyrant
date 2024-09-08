@@ -52,66 +52,10 @@ namespace RimeTyrant
 
         #endregion
 
-        #region 加词框
-
-        private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (encoder.IsValidWord(ui.WordToAdd))
-                ui.WordColor = Dict.HasWord(ui.WordToAdd)
-                    ? "IndianRed"
-                    : CodeToSearch.TextColor.ToHex();
-            LoadAutoCodes();
-            CheckAddBtn();
-        }
-
-        #endregion
-
-        #region 自动编码
-
-        private async void UseAutoEncode_CheckedChanged(object sender, CheckedChangedEventArgs e)
-        {
-            await InitializeEncoder();
-            LoadAutoCodes();
-        }
-
-        private async void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            await InitializeEncoder();
-            LoadAutoCodes();
-        }
-
-        private void AutoCode_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            AutoSearch();
-            CheckAddBtn();
-        }
-
-        #endregion
-
-        #region 手动编码
-
-        private void ManualEncode_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            AutoSearch();
-            CheckAddBtn();
-        }
-
-        #endregion
-
-        #region 输入优先级
-
-        private void UsePriority_CheckedChanged(object sender, CheckedChangedEventArgs e)
-            => CheckAddBtn();
-
-        private void Priority_TextChanged(object sender, TextChangedEventArgs e)
-            => CheckAddBtn();
-
-        #endregion
-
         #region 涉及多个控件的逻辑
 
         /// <summary>
-        /// 检查是否允许添加词，仅由四个控件触发：加词框、自动编码选单、手动编码框、勾选优先级、优先级框
+        /// 检查是否允许添加词，仅由五个控件触发：加词框、自动编码选单、手动编码框、勾选优先级、优先级框
         /// </summary>
         private void CheckAddBtn()
         {
@@ -165,6 +109,87 @@ namespace RimeTyrant
                     : ui.UseManualEncode && !string.IsNullOrEmpty(ui.ManualCode)
                     ? ui.ManualCode
                     : string.Empty;
+        }
+
+        #endregion
+
+        #region 加词框
+
+        private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (encoder.IsValidWord(ui.WordToAdd))
+                ui.WordColor = Dict.HasWord(ui.WordToAdd)
+                    ? "IndianRed"
+                    : CodeToSearch.TextColor.ToHex();
+            LoadAutoCodes();
+            CheckAddBtn();
+        }
+
+        #endregion
+
+        #region 自动编码
+
+        private async void UseAutoEncode_CheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            await InitializeEncoder();
+            LoadAutoCodes();
+        }
+
+        private async void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await InitializeEncoder();
+            LoadAutoCodes();
+        }
+
+        private void AutoCode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AutoSearch();
+            CheckAddBtn();
+        }
+
+        #endregion
+
+        #region 手动编码
+
+        private void ManualEncode_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            AutoSearch();
+            CheckAddBtn();
+        }
+
+        #endregion
+
+        #region 优先级
+
+        private void UsePriority_CheckedChanged(object sender, CheckedChangedEventArgs e)
+            => CheckAddBtn();
+
+        private void Priority_TextChanged(object sender, TextChangedEventArgs e)
+            => CheckAddBtn();
+
+        #endregion
+
+        #region 添加按钮
+
+        private void AddBtn_Clicked(object sender, EventArgs e)
+        {
+            var code = ui.UseAutoEncode
+                ? ui.AutoCode ?? string.Empty // 如果为空，不应该通过合法检查
+                : ui.ManualCode;
+            var priority = ui.UsePriority && ui.Priority.Length != 0
+                ? ui.Priority
+                : "0";
+            var success = Simp.Try("添加词条", () =>
+            {
+                Item newItem = new(ui.WordToAdd, code, priority);
+                Dict.Add(newItem);
+            });
+            if (success)
+            {
+                ui.CodeToSearch = string.Empty; // 清空编码框
+                ui.CodeToSearch = code; // 重新搜索，相当于刷新
+                ui.AllowAdd = false; // 避免重复添加
+            }
         }
 
         #endregion

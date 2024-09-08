@@ -41,7 +41,7 @@ namespace RimeTyrant.Tools
 
         private string _manualCode = string.Empty;
 
-        private string _Priority = string.Empty;
+        private string _priority = string.Empty;
 
         #endregion
 
@@ -276,12 +276,12 @@ namespace RimeTyrant.Tools
 
         public string Priority
         {
-            get => _Priority;
+            get => _priority;
             set
             {
-                if (_Priority != value)
+                if (_priority != value)
                 {
-                    _Priority = value;
+                    _priority = value;
                     OnPropertyChanged(nameof(Priority));
                 }
             }

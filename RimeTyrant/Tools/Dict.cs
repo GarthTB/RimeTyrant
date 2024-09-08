@@ -56,8 +56,8 @@ namespace RimeTyrant.Tools
         public static void Add(Item entry)
         {
             if (HasEntry(entry))
-                throw new Exception("词库中已存在该词条！");
-            if (!_dict.Add(entry.Clone()))
+                throw new Exception("词库中已存在该词条！未添加！");
+            if (!_dict.Add(entry))
                 throw new Exception($"无法添加词条：{entry.Word} {entry.Code} {entry.Priority}");
         }
 

@@ -5,17 +5,6 @@
     /// </summary>
     internal class JD(string path) : Code(path)
     {
-        public override bool IsValidWord(string? word)
-            => !string.IsNullOrWhiteSpace(word);
-
-        public override bool IsValidCode(string? code)
-            => !string.IsNullOrWhiteSpace(code);
-
-        public override bool IsValidPriority(string? priority)
-            => priority is not null
-               && ((int.TryParse(priority, out int num) && num >= 0)
-                   || priority.Length == 0);
-
         protected override bool FindBlank(string[] codes, string prefix, out string code)
         {
             code = string.Empty;
