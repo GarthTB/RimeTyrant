@@ -41,7 +41,6 @@ namespace RimeTyrant
                 ui.Priority = string.Empty;
                 ui.CodeToSearch = string.Empty;
             }
-            else Simp.Show("未载入词库文件！");
         }
 
         private async void LogBtn_Clicked(object sender, EventArgs e)
@@ -84,7 +83,7 @@ namespace RimeTyrant
         }
 
         /// <summary>
-        /// 加载自动编码，仅由四个控件触发：加词框、勾选自动编码、编码方案选单、码长选单
+        /// 加载自动编码，仅由三个控件触发：加词框、勾选自动编码、编码方案选单
         /// </summary>
         private void LoadAutoCodes()
         {
@@ -150,6 +149,12 @@ namespace RimeTyrant
             CheckAddBtn();
         }
 
+        private void CodeLength_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AutoSearch();
+            CheckAddBtn();
+        }
+
         #endregion
 
         #region 手动编码
@@ -194,6 +199,16 @@ namespace RimeTyrant
                 ui.AllowAdd = false; // 避免重复添加
                 ui.AllowMod = true;
             }
+        }
+
+        #endregion
+
+        #region 选中编码
+
+        private void ResultArray_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            ui.AllowDel = e.SelectedItem is Item;
+            ui.AllowCut = e.SelectedItem is Item && e.SelectedItemIndex > 0;
         }
 
         #endregion

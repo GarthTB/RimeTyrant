@@ -324,6 +324,8 @@ namespace RimeTyrant.Tools
                     _codeToSearch = value;
                     OnPropertyChanged(nameof(CodeToSearch));
                     Search(value);
+                    AllowDel = false;
+                    AllowCut = false;
                 }
             }
         }

@@ -67,6 +67,7 @@
                 <Picker
                     x:Name="CodeLength"
                     Grid.Column="3"
+                    SelectedIndexChanged="CodeLength_SelectedIndexChanged"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding ValidCodeLengthArray, Mode=TwoWay}"
                     SelectedIndex="{Binding CodeLengthIndex, Mode=TwoWay}"
@@ -183,21 +184,24 @@
                 x:Name="ResultArray"
                 Grid.Row="2"
                 Grid.Column="1"
-                ItemsSource="{Binding ResultArray, Mode=TwoWay}">
+                ItemSelected="ResultArray_ItemSelected"
+                ItemsSource="{Binding ResultArray, Mode=TwoWay}"
+                SelectionMode="Single">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Grid ColumnSpacing="8" Padding="0,2,0,2">
+                            <Grid ColumnSpacing="8" Padding="0,4">
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="6*" />
+                                    <ColumnDefinition Width="5*" />
                                     <ColumnDefinition Width="4*" />
-                                    <ColumnDefinition Width="4*" />
-                                    <ColumnDefinition Width="3*" />
                                     <ColumnDefinition Width="4" />
                                 </Grid.ColumnDefinitions>
-
-                                <Entry Grid.Column="0" Text="{Binding Word}" />
-                                <Entry Grid.Column="1" Text="{Binding Code}" />
-                                <Entry Grid.Column="2" Text="{Binding Priority}" />
+                                <Label Grid.Column="0" Text="●" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Entry Grid.Column="1" Text="{Binding Word}" />
+                                <Entry Grid.Column="2" Text="{Binding Code}" />
+                                <Entry Grid.Column="3" Text="{Binding Priority}" MaxLength="16"/>
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
@@ -229,7 +233,7 @@
                     Grid.Column="2"
                     Clicked="ModBtn_Clicked"
                     IsEnabled="{Binding AllowMod, Mode=TwoWay}"
-                    Text="保存修改" />
+                    Text="应用并保存" />
             </Grid>
         </Grid>
 

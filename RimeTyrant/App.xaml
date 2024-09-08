@@ -17,13 +17,13 @@
                         <VisualStateGroup>
                             <VisualState x:Name="Wide">
                                 <VisualState.StateTriggers>
-                                    <AdaptiveTrigger MinWindowWidth="600" />
+                                    <AdaptiveTrigger MinWindowWidth="640" />
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
                                     <Setter Property="ColumnDefinitions">
                                         <ColumnDefinitionCollection>
-                                            <ColumnDefinition Width="8*" />
-                                            <ColumnDefinition Width="9*" />
+                                            <ColumnDefinition Width="4*" />
+                                            <ColumnDefinition Width="5*" />
                                         </ColumnDefinitionCollection>
                                     </Setter>
                                     <Setter Property="RowDefinitions">
@@ -45,8 +45,8 @@
                                     </Setter>
                                     <Setter Property="RowDefinitions">
                                         <RowDefinitionCollection>
-                                            <RowDefinition Height="4*" />
-                                            <RowDefinition Height="3*" />
+                                            <RowDefinition Height="6*" />
+                                            <RowDefinition Height="5*" />
                                         </RowDefinitionCollection>
                                     </Setter>
                                 </VisualState.Setters>
@@ -62,7 +62,7 @@
                         <VisualStateGroup>
                             <VisualState x:Name="Wide">
                                 <VisualState.StateTriggers>
-                                    <AdaptiveTrigger MinWindowWidth="600" />
+                                    <AdaptiveTrigger MinWindowWidth="640" />
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
                                     <Setter Property="Grid.Column" Value="1" />
