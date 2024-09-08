@@ -25,9 +25,9 @@ namespace RimeTyrant
         private void MainPage_Loaded(object sender, EventArgs e)
             => FileLoader.AutoLoadDict();
 
-        private void ReloadBtn_Clicked(object sender, EventArgs e)
+        private async void ReloadBtn_Clicked(object sender, EventArgs e)
         {
-            var dict = FileLoader.PickYaml("选择一个以dict.yaml结尾的词库文件");
+            var dict = await FileLoader.PickYaml("选择一个以dict.yaml结尾的词库文件");
             if (!string.IsNullOrEmpty(dict) && FileLoader.LoadDict(dict))
             {
                 Simp.Show("载入成功！");
@@ -73,12 +73,12 @@ namespace RimeTyrant
 
         #region 自动编码
 
-        private void UseAutoEncode_CheckedChanged(object sender, CheckedChangedEventArgs e)
-            => InitializeEncoder();
+        private async void UseAutoEncode_CheckedChanged(object sender, CheckedChangedEventArgs e)
+            => await InitializeEncoder();
 
-        private void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
+        private async void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
-            InitializeEncoder();
+            await InitializeEncoder();
             if (ui.EncodeMethod is not null && encoder.Ready(ui.EncodeMethod))
                 LoadAutoCodes();
         }
@@ -98,13 +98,13 @@ namespace RimeTyrant
         /// <summary>
         /// 初始化自动编码器，仅由两个控件触发：勾选自动编码、编码方案选单
         /// </summary>
-        private void InitializeEncoder()
+        private async Task InitializeEncoder()
         {
             if (Dict.Loaded
                 && ui.UseAutoEncode
                 && ui.EncodeMethod is not null
                 && !encoder.Ready(ui.EncodeMethod))
-                (ui.ValidCodeLengthArray, ui.CodeLengthIndex) = encoder.SetCode(ui.EncodeMethod);
+                (ui.ValidCodeLengthArray, ui.CodeLengthIndex) = await encoder.SetCode(ui.EncodeMethod);
         }
 
         /// <summary>

@@ -22,25 +22,25 @@ namespace RimeTyrant.Tools
         /// <summary>
         /// 设置编码方案，返回值为所有有效码长和默认码长的所在的索引
         /// </summary>
-        public (int[], int) SetCode(string codeName)
+        public async Task<(int[], int)> SetCode(string codeName)
         {
-            switch (codeName)
+            try
             {
-                case "键道6":
-                    var success = Simp.Try(() =>
-                    {
+                switch (codeName)
+                {
+                    case "键道6":
                         static Code Initialize(string filePath) => new JD(filePath);
-                        _code = FileLoader.LoadSingle("xkjd6.danzi.dict.yaml", codeName, Initialize);
+                        _code = await FileLoader.LoadSingle("xkjd6.danzi.dict.yaml", codeName, Initialize);
                         _name = codeName;
-                    });
-                    if (success)
                         return ([3, 4, 5, 6], 1);
-                    Reset();
-                    return ([], -1);
-
-                default:
-                    Reset();
-                    return ([], -1);
+                    default:
+                        throw new Exception();
+                }
+            }
+            catch
+            {
+                Reset();
+                return ([], -1);
             }
         }
 

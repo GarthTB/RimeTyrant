@@ -6,22 +6,11 @@ namespace RimeTyrant.Tools
     {
         public delegate Code Initializer(string filePath);
 
-        public static string PickYaml(string title)
+        public static async Task<string> PickYaml(string title)
         {
             try
             {
-                var option = new PickOptions() { PickerTitle = title };
-
-                var result = Task.Run(async () =>
-                {
-                    var file = await FilePicker.Default.PickAsync(option);
-                    return file?.FullPath;
-                });
-                var path = result.Result;
-
-                return path is not null && path.EndsWith("dict.yaml", StringComparison.OrdinalIgnoreCase)
-                    ? path
-                    : string.Empty;
+                return await Simp.GetFile(title);
             }
             catch (Exception)
             {
@@ -85,7 +74,7 @@ namespace RimeTyrant.Tools
 
         public static bool LoadDict(string path) => Simp.Try(() => Dict.Load(path));
 
-        public static Code? LoadSingle(string fileName, string codeName, Initializer Initialize)
+        public static async Task<Code?> LoadSingle(string fileName, string codeName, Initializer Initialize)
         {
             if (AutoLoadSamePath(fileName, out var filePath)
                 && TryLoadCode(filePath, Initialize, out Code? code))
@@ -93,14 +82,13 @@ namespace RimeTyrant.Tools
                 Simp.Show($"已自动载入词库同目录中的{codeName}单字库");
                 return code;
             }
-            // 不知道为什么，这行提示总是在手动选择之后才显示
             Simp.Show($"未能自动找到{codeName}单字库，请手动选择");
-            return ManualLoadSingle(Initialize);
+            return await ManualLoadSingle(Initialize);
         }
 
-        private static Code? ManualLoadSingle(Initializer Initialize)
+        private static async Task<Code?> ManualLoadSingle(Initializer Initialize)
         {
-            var filePath = PickYaml("选择一个以dict.yaml结尾的单字文件");
+            var filePath = await PickYaml("选择一个以dict.yaml结尾的单字文件");
             if (TryLoadCode(filePath, Initialize, out Code? code))
             {
                 Simp.Show("成功载入指定的单字库");
@@ -111,7 +99,7 @@ namespace RimeTyrant.Tools
         }
 
         /// <summary>
-        /// 查找词库相同路径中的单字文件
+        /// 自动加载词库相同路径中的单字文件
         /// </summary>
         private static bool AutoLoadSamePath(string fileName, out string filePath)
         {
