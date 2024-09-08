@@ -237,11 +237,13 @@
                 <Button
                     x:Name="DelBtn"
                     Grid.Column="0"
+                    Clicked="DelBtn_Clicked"
                     IsEnabled="{Binding AllowDel, Mode=TwoWay}"
                     Text="删除" />
                 <Button
                     x:Name="CutBtn"
                     Grid.Column="1"
+                    Clicked="CutBtn_Clicked"
                     IsEnabled="{Binding AllowCut, Mode=TwoWay}"
                     Text="截短" />
                 <Button

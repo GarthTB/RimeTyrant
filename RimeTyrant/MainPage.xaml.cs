@@ -189,15 +189,13 @@ namespace RimeTyrant
             var priority = ui.UsePriority && ui.Priority.Length != 0
                 ? ui.Priority
                 : "0";
-            var success = Simp.Try("添加词条", () =>
-            {
-                Item newItem = new(ui.WordToAdd, code, priority);
-                Dict.Add(newItem);
-            });
+            var newItem = new Item(ui.WordToAdd, code, priority);
+
+            var success = Simp.Try("添加词条", () => Dict.Add(newItem));
+
             if (success)
             {
-                ui.CodeToSearch = string.Empty; // 清空编码框
-                ui.CodeToSearch = code; // 重新搜索，相当于刷新
+                ui.OriginResultArray = [.. ui.OriginResultArray.Append(newItem).OrderBy(x => x.Code)];
                 ui.AllowAdd = false; // 避免重复添加
                 ui.AllowMod = Unsaved = true;
             }
@@ -207,11 +205,21 @@ namespace RimeTyrant
 
         #region 选中编码
 
+        private int SelectedIndex { get; set; }
+
         private void ResultArray_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            ui.AllowDel = e.SelectedItem is Item;
-            ui.AllowCut = e.SelectedItem is Item item
-                          && item.Code != ui.CodeToSearch;
+            if (e.SelectedItem is Item item)
+            {
+                SelectedIndex = e.SelectedItemIndex;
+                ui.AllowDel = true;
+                ui.AllowCut = item.Code != ui.CodeToSearch;
+            }
+            else
+            {
+                SelectedIndex = -1;
+                ui.AllowDel = ui.AllowCut = false;
+            }
         }
 
         #endregion
@@ -219,15 +227,43 @@ namespace RimeTyrant
         #region 改动了搜索结果
 
         private void Result_Modified(object sender, TextChangedEventArgs e)
+            => ui.AllowMod = Unsaved || Modified();
+
+        private bool Modified()
         {
-            bool Modified()
+            for (int i = 0; i < ui.ResultArray.Length; i++)
+                if (!ui.ResultArray[i].Equals(ui.OriginResultArray[i]))
+                    return true;
+            return false;
+        }
+
+        #endregion
+
+        #region 删除按钮
+
+        private void DelBtn_Clicked(object sender, EventArgs e)
+        {
+            // SelectedIndex不合格时这个按钮不应该激活
+            var success = Simp.Try("删除词条", ()
+                => Dict.Remove(ui.OriginResultArray[SelectedIndex]));
+
+            if (success)
             {
-                for (int i = 0; i < ui.ResultArray.Length; i++)
-                    if (!ui.ResultArray[i].Equals(ui.OriginResultArray[i]))
-                        return true;
-                return false;
-            };
-            ui.AllowMod = Unsaved || Modified();
+                ui.OriginResultArray = [.. ui.OriginResultArray
+                    .Where((element, idx) => idx != SelectedIndex)
+                    .OrderBy(x => x.Code)];
+                ui.AllowDel = false;
+                ui.AllowMod = Unsaved = true;
+            }
+        }
+
+        #endregion
+
+        #region 截短按钮
+
+        private void CutBtn_Clicked(object sender, EventArgs e)
+        {
+
         }
 
         #endregion

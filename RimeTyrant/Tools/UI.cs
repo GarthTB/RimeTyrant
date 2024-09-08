@@ -349,7 +349,7 @@ namespace RimeTyrant.Tools
         public Item[] OriginResultArray
         {
             get => _originResultArray;
-            private set
+            set
             {
                 if (_originResultArray != value)
                 {

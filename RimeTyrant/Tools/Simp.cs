@@ -6,7 +6,7 @@
     internal static class Simp
     {
         /// <summary>
-        /// 尝试执行名为name的操作，如果发生异常则报错并返回false，否则什么都不显示并返回true
+        /// 尝试执行名为name的操作，成功无提示返回true，否则报错并返回false
         /// </summary>
         public static bool Try(string name, Action action)
         {
