@@ -41,26 +41,22 @@ namespace RimeTyrant.Tools
 
         private static bool AutoLoadDictWinUI(out string path)
         {
+            path = "程序上级";
             var parentPath = Directory.GetParent(Directory.GetCurrentDirectory());
             if (parentPath != null && parentPath.Exists)
             {
                 var dicts = AutoFindYamls(parentPath.FullName);
                 if (dicts.Length == 1 && LoadDict(dicts[0]))
-                {
-                    path = "程序上级";
                     return true;
-                }
             }
 
+            path = "Rime默认用户目录";
             var userPath = $@"C:\Users\{Environment.UserName}\AppData\Roaming\Rime";
             if (Directory.Exists(userPath))
             {
                 var dicts = AutoFindYamls(userPath);
                 if (dicts.Length == 1 && LoadDict(dicts[0]))
-                {
-                    path = "Rime默认用户目录";
                     return true;
-                }
             }
 
             path = string.Empty;
@@ -68,9 +64,14 @@ namespace RimeTyrant.Tools
         }
 
         private static string[] AutoFindYamls(string directory)
-            => Directory.GetFiles(directory, "*.yaml", SearchOption.AllDirectories)
-                        .Where(f => f.EndsWith("dict.yaml", StringComparison.OrdinalIgnoreCase))
-                        .ToArray();
+        {
+            string[] dicts = [];
+            var success = Simp.Try("自动寻找dict.yaml文件", ()
+                => dicts = Directory.GetFiles(directory, "*.yaml", SearchOption.AllDirectories)
+                                    .Where(f => f.EndsWith("dict.yaml", StringComparison.OrdinalIgnoreCase))
+                                    .ToArray(), false);
+            return success ? dicts : [];
+        }
 
         public static bool LoadDict(string path)
             => Simp.Try($"载入位于{path}的词库", () => Dict.Load(path));
@@ -124,8 +125,7 @@ namespace RimeTyrant.Tools
             {
                 code = null;
             }
-            return code?.AllowAutoCode
-                   ?? false;
+            return code?.AllowAutoCode ?? false;
         }
     }
 }
