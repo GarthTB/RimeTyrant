@@ -14,8 +14,6 @@ namespace RimeTyrant.Tools
 
         #region 字段
 
-        private string _wordToAdd = string.Empty;
-
         private bool _useAutoEncode = false;
 
         private bool _usePriority = false;
@@ -34,27 +32,6 @@ namespace RimeTyrant.Tools
 
         // 是自动编码序号，不是编码
         private int _codeIndex = -1;
-
-        private string _manualCode = string.Empty;
-
-        private string _priority = string.Empty;
-
-        #endregion
-
-        #region 加词框
-
-        public string WordToAdd
-        {
-            get => _wordToAdd;
-            set
-            {
-                if (_wordToAdd != value)
-                {
-                    _wordToAdd = value;
-                    OnPropertyChanged(nameof(WordToAdd));
-                }
-            }
-        }
 
         #endregion
 
@@ -217,36 +194,6 @@ namespace RimeTyrant.Tools
                     ShortCodes = CodeLength != -1
                                     && encoder.CutCodes(value, CodeLength, out var now)
                                         ? now : [];
-                }
-            }
-        }
-
-        #endregion
-
-        #region 手动编码和优先级
-
-        public string ManualCode
-        {
-            get => _manualCode;
-            set
-            {
-                if (_manualCode != value)
-                {
-                    _manualCode = value;
-                    OnPropertyChanged(nameof(ManualCode));
-                }
-            }
-        }
-
-        public string Priority
-        {
-            get => _priority;
-            set
-            {
-                if (_priority != value)
-                {
-                    _priority = value;
-                    OnPropertyChanged(nameof(Priority));
                 }
             }
         }

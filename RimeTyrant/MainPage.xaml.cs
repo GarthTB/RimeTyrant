@@ -38,9 +38,9 @@ namespace RimeTyrant
             else if (FileLoader.LoadDict(dict))
             {
                 Simp.Show("载入成功！");
-                ui.WordToAdd = string.Empty;
-                ui.ManualCode = string.Empty;
-                ui.Priority = string.Empty;
+                WordToAdd.Text = string.Empty;
+                ManualEncode.Text = string.Empty;
+                Priority.Text = string.Empty;
                 ui.CodeToSearch = string.Empty;
             }
         }
@@ -58,9 +58,9 @@ namespace RimeTyrant
         private void CheckAddBtn()
         {
             var codeValid = (ui.UseAutoEncode && encoder.IsValidCode(ui.AutoCode))
-                            || (ui.UseManualEncode && encoder.IsValidCode(ui.ManualCode));
+                            || (ui.UseManualEncode && encoder.IsValidCode(ManualEncode.Text));
             var priorityValid = !ui.UsePriority
-                                || (ui.UsePriority && encoder.IsValidPriority(ui.Priority));
+                                || (ui.UsePriority && encoder.IsValidPriority(Priority.Text));
             ui.AllowAdd = Dict.Loaded
                           && codeValid
                           && priorityValid;
@@ -87,7 +87,7 @@ namespace RimeTyrant
                      && ui.UseAutoEncode
                      && !string.IsNullOrEmpty(ui.EncodeMethod)
                      && encoder.Ready(ui.EncodeMethod)
-                     && encoder.Encode(ui.WordToAdd, out var fullCodes)
+                     && encoder.Encode(WordToAdd.Text, out var fullCodes)
                      ? fullCodes : [];
             ui.FullCodes = fc;
             // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
@@ -104,8 +104,8 @@ namespace RimeTyrant
             if (Dict.Loaded)
                 ui.CodeToSearch = ui.UseAutoEncode && !string.IsNullOrEmpty(ui.AutoCode)
                     ? ui.AutoCode
-                    : ui.UseManualEncode && !string.IsNullOrEmpty(ui.ManualCode)
-                    ? ui.ManualCode
+                    : ui.UseManualEncode && !string.IsNullOrEmpty(ManualEncode.Text)
+                    ? ManualEncode.Text
                     : string.Empty;
         }
 
@@ -129,8 +129,8 @@ namespace RimeTyrant
 
         private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (encoder.IsValidWord(ui.WordToAdd))
-                WordToAdd.TextColor = Dict.HasWord(ui.WordToAdd)
+            if (encoder.IsValidWord(WordToAdd.Text))
+                WordToAdd.TextColor = Dict.HasWord(WordToAdd.Text)
                     ? Color.FromRgb(214, 100, 0)
                     : CodeToSearch.TextColor;
             LoadAutoCodes();
@@ -195,11 +195,11 @@ namespace RimeTyrant
         {
             var code = ui.UseAutoEncode
                 ? ui.AutoCode ?? string.Empty // 如果为空，不应该通过合法检查
-                : ui.ManualCode;
-            var priority = ui.UsePriority && ui.Priority.Length != 0
-                ? ui.Priority
+                : ManualEncode.Text;
+            var priority = ui.UsePriority && Priority.Text.Length != 0
+                ? Priority.Text
                 : "0";
-            var newItem = new Item(ui.WordToAdd, code, priority);
+            var newItem = new Item(WordToAdd.Text, code, priority);
 
             var success = Simp.Try("添加词条", () => Dict.Add(newItem));
 

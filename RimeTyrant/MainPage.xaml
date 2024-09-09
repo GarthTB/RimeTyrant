@@ -37,7 +37,6 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Placeholder="待添加的词"
-                Text="{Binding WordToAdd, Mode=TwoWay}"
                 TextChanged="WordToAdd_TextChanged" />
 
             <Grid Grid.Row="2" Grid.Column="1">
@@ -96,7 +95,6 @@
                     IsEnabled="{Binding UseManualEncode, Mode=TwoWay}"
                     MaxLength="12"
                     Placeholder="手动编码"
-                    Text="{Binding ManualCode, Mode=TwoWay}"
                     TextChanged="ManualEncode_TextChanged" />
             </Grid>
 
@@ -118,7 +116,6 @@
                     IsEnabled="{Binding UsePriority, Mode=TwoWay}"
                     MaxLength="24"
                     Placeholder="优先级"
-                    Text="{Binding Priority, Mode=TwoWay}"
                     TextChanged="Priority_TextChanged" />
             </Grid>
 
@@ -183,7 +180,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 ItemSelected="ResultArray_ItemSelected"
-                ItemsSource="{Binding ViewResult, Mode=TwoWay}"
+                ItemsSource="{Binding ViewResults, Mode=TwoWay}"
                 SelectionMode="Single">
                 <ListView.ItemTemplate>
                     <DataTemplate>
