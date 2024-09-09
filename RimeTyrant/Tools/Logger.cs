@@ -33,7 +33,7 @@ namespace RimeTyrant.Tools
 
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
             if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
+                _ = Directory.CreateDirectory(dir);
 
             var path = Path.Combine(dir, $"RimeTyrant_{DateTime.Now:yyyyMMdd}.log");
             if (File.Exists(path))

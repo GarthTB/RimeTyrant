@@ -33,7 +33,9 @@ namespace RimeTyrant
         private async void ReloadBtn_Clicked(object sender, EventArgs e)
         {
             var dict = await FileLoader.PickYaml("选择一个以dict.yaml结尾的词库文件");
-            if (!string.IsNullOrEmpty(dict) && FileLoader.LoadDict(dict))
+            if (string.IsNullOrEmpty(dict))
+                Simp.Show("未选择文件！");
+            else if (FileLoader.LoadDict(dict))
             {
                 Simp.Show("载入成功！");
                 ui.WordToAdd = string.Empty;
