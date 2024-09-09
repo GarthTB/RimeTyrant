@@ -3,11 +3,13 @@
 namespace RimeTyrant.Tools
 {
     /// <summary>
-    /// UI中的绑定数据
+    /// UI中的绑定数据，和简单的逻辑
     /// </summary>
     internal class UI : INotifyPropertyChanged
     {
-        // 始终和主页保持同一个编码器
+        /// <summary>
+        /// 和主页共享同一个编码器
+        /// </summary>
         public Encoder encoder = new();
 
         #region 加词配置
@@ -20,17 +22,14 @@ namespace RimeTyrant.Tools
 
         private string[] _encodeMethods = [];
 
-        // 0：键道6
         private int _encodeMethodIndex = -1;
 
         private int[] _validCodeLengths = [];
 
-        // 是码长序号，不是码长
         private int _codeLengthIndex = -1;
 
         private string[] _shortCodes = [];
 
-        // 是自动编码序号，不是编码
         private int _codeIndex = -1;
 
         #endregion
@@ -110,9 +109,6 @@ namespace RimeTyrant.Tools
             }
         }
 
-        /// <summary>
-        /// 是码长序号，不是码长
-        /// </summary>
         public int CodeLengthIndex
         {
             get => _codeLengthIndex;
@@ -160,9 +156,6 @@ namespace RimeTyrant.Tools
             }
         }
 
-        /// <summary>
-        /// 是自动编码序号，不是编码
-        /// </summary>
         public int CodeIndex
         {
             get => _codeIndex;
@@ -202,26 +195,7 @@ namespace RimeTyrant.Tools
 
         #endregion
 
-        #region 加词按钮
-
-        private bool _allowAdd = false;
-
-        public bool AllowAdd
-        {
-            get => _allowAdd;
-            set
-            {
-                if (_allowAdd != value)
-                {
-                    _allowAdd = value;
-                    OnPropertyChanged(nameof(AllowAdd));
-                }
-            }
-        }
-
-        #endregion
-
-        #region 查找
+        #region 异步查找
 
         private string _codeToSearch = string.Empty;
 
@@ -287,13 +261,11 @@ namespace RimeTyrant.Tools
 
         #endregion
 
-        #region 三个编辑按钮
+        #region 两个编辑按钮
 
         private bool _allowDel = false;
 
         private bool _allowCut = false;
-
-        private bool _allowMod = false;
 
         public bool AllowDel
         {
@@ -317,19 +289,6 @@ namespace RimeTyrant.Tools
                 {
                     _allowCut = value;
                     OnPropertyChanged(nameof(AllowCut));
-                }
-            }
-        }
-
-        public bool AllowMod
-        {
-            get => _allowMod;
-            set
-            {
-                if (_allowMod != value)
-                {
-                    _allowMod = value;
-                    OnPropertyChanged(nameof(AllowMod));
                 }
             }
         }

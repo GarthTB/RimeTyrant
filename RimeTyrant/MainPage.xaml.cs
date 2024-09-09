@@ -61,9 +61,9 @@ namespace RimeTyrant
                             || (ui.UseManualEncode && encoder.IsValidCode(ManualEncode.Text));
             var priorityValid = !ui.UsePriority
                                 || (ui.UsePriority && encoder.IsValidPriority(Priority.Text));
-            ui.AllowAdd = Dict.Loaded
-                          && codeValid
-                          && priorityValid;
+            AddBtn.IsEnabled = Dict.Loaded
+                               && codeValid
+                               && priorityValid;
         }
 
         /// <summary>
@@ -206,8 +206,8 @@ namespace RimeTyrant
             if (success)
             {
                 RefreshAdd(newItem);
-                ui.AllowAdd = false; // 避免重复添加
-                ui.AllowMod = Unsaved = true;
+                AddBtn.IsEnabled = false; // 避免重复添加
+                ModBtn.IsEnabled = Unsaved = true;
             }
         }
 
@@ -236,7 +236,7 @@ namespace RimeTyrant
         #region 改动了搜索结果
 
         private void Result_Modified(object sender, TextChangedEventArgs e)
-            => ui.AllowMod = Unsaved || Modified();
+            => ModBtn.IsEnabled = Unsaved || Modified();
 
         private bool Modified()
         {
@@ -260,7 +260,7 @@ namespace RimeTyrant
             {
                 RefreshDel(SelectedIndex);
                 ui.AllowDel = false;
-                ui.AllowMod = Unsaved = true;
+                ModBtn.IsEnabled = Unsaved = true;
             }
         }
 
@@ -273,7 +273,7 @@ namespace RimeTyrant
             if (Simp.Try("自动截短", CutTheItem))
             {
                 ui.AllowCut = false;
-                ui.AllowMod = Unsaved = true;
+                ModBtn.IsEnabled = Unsaved = true;
             }
         }
 
@@ -371,7 +371,7 @@ namespace RimeTyrant
             if (modSuccess && SaveDict())
             {
                 Simp.Show("应用并保存成功！");
-                Unsaved = ui.AllowMod = false;
+                Unsaved = ModBtn.IsEnabled = false;
             }
         }
 
