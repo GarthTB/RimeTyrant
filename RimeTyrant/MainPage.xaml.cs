@@ -22,7 +22,7 @@ namespace RimeTyrant
 
         #endregion
 
-        #region 加载、保存、日志
+        #region 加载、日志
 
         private void MainPage_Loaded(object sender, EventArgs e)
         {
@@ -45,14 +45,6 @@ namespace RimeTyrant
 
         private void LogBtn_Clicked(object sender, EventArgs e)
             => Navigation.PushAsync(logPage);
-
-        private bool Unsaved { get; set; } = false;
-
-        private void ModBtn_Clicked(object sender, EventArgs e)
-        {
-            // 应用修改
-            // 如果保存到原文件失败，就保存到新位置
-        }
 
         #endregion
 
@@ -114,6 +106,20 @@ namespace RimeTyrant
                     ? ui.ManualCode
                     : string.Empty;
         }
+
+        #endregion
+
+        #region 更新搜索结果
+
+        private void RefreshAdd(Item newItem)
+            => ui.OriginResultArray = [.. ui.OriginResultArray
+                .Append(newItem)
+                .OrderBy(x => x.Code)];
+
+        private void RefreshDel(int index)
+            => ui.OriginResultArray = [.. ui.OriginResultArray
+                .Where((element, idx) => idx != index)
+                .OrderBy(x => x.Code)];
 
         #endregion
 
@@ -279,22 +285,27 @@ namespace RimeTyrant
             // 检查截短后的编码是否和现有的编码冲突，如果有，则要加长占位的码
             var plc_hldr = ui.OriginResultArray.FirstOrDefault(x => x.Code == cut_code)?.Clone();
             if (plc_hldr is null)
+                OneWay(sel_item, cut_item); // 没有冲突，直接缩短
+            else TwoWay(sel_item, cut_code, cut_item, plc_hldr); // 有冲突，处理占位的码
+
+            void OneWay(Item sel_item, Item cut_item)
             {
-                if (Simp.Try("删除选中的过长条目", () => Dict.Remove(sel_item, "删除选中的过长条目"))
-                    && Simp.Try("添加截短后的新条目", () => Dict.Add(cut_item, "添加截短后的新条目")))
+                if (Simp.Try("删除选中的过长条目", () => Dict.Remove(sel_item, "删除：过长"))
+                    && Simp.Try("添加截短后的新条目", () => Dict.Add(cut_item, "添加：截短")))
                 {
                     RefreshDel(SelectedIndex);
                     RefreshAdd(cut_item);
                 }
             }
-            else
+
+            void TwoWay(Item sel_item, string cut_code, Item cut_item, Item plc_hldr)
             {
                 var index = Array.FindIndex(ui.OriginResultArray, x => x.Code == cut_code);
-                var moved = TwoWays(sel_item, plc_hldr);
-                if (Simp.Try("删除选中的过长条目", () => Dict.Remove(sel_item, "删除选中的过长条目"))
-                    && Simp.Try("添加截短后的新条目", () => Dict.Add(cut_item, "添加截短后的新条目"))
-                    && Simp.Try("删除占位的短码条目", () => Dict.Remove(plc_hldr, "删除占位的短码条目"))
-                    && Simp.Try("添加加长后的新条目", () => Dict.Add(moved, "添加加长后的新条目")))
+                var moved = Move(sel_item, plc_hldr);
+                if (Simp.Try("删除选中的过长条目", () => Dict.Remove(sel_item, "删除：过长"))
+                    && Simp.Try("添加截短后的新条目", () => Dict.Add(cut_item, "添加：截短"))
+                    && Simp.Try("删除占位的短码条目", () => Dict.Remove(plc_hldr, "删除：占位"))
+                    && Simp.Try("添加加长后的新条目", () => Dict.Add(moved, "添加：加长")))
                 {
                     RefreshDel(SelectedIndex);
                     RefreshAdd(cut_item);
@@ -304,7 +315,7 @@ namespace RimeTyrant
             }
         }
 
-        private Item TwoWays(Item sel_item, Item plc_hldr)
+        private Item Move(Item sel_item, Item plc_hldr)
         {
             if (!encoder.Encode(plc_hldr.Word, out var fullCodes))
                 throw new Exception("无法为占位的词编码。未操作。");
@@ -312,47 +323,94 @@ namespace RimeTyrant
                 => !encoder.CutCode(c, sel_item.Code.Length, out var cut_c)
                     ? throw new Exception("无法自动截短占位词的全码。未操作。")
                     : cut_c);
-            var moved = cut_codes.Contains(sel_item.Code)
-                ? Cross(sel_item, plc_hldr)
-                : FindNew(plc_hldr, fullCodes);
-            return moved;
-        }
+            return cut_codes.Contains(sel_item.Code)
+                ? Exchange(sel_item, plc_hldr) // 刚好可以对调
+                : FindNew(plc_hldr, fullCodes); // 不能对调，另外加长
 
-        private static Item Cross(Item sel_item, Item plc_hldr)
-            => new(plc_hldr.Word, sel_item.Code, plc_hldr.Priority);
+            static Item Exchange(Item sel_item, Item plc_hldr)
+                => new(plc_hldr.Word, sel_item.Code, plc_hldr.Priority);
 
-        private Item FindNew(Item plc_hldr, string[] fullCodes)
-        {
-            var range = ui.ValidCodeLengthArray.Where(l => l > plc_hldr.Code.Length).Order();
-            var new_code = string.Empty;
-            foreach (var len in range)
+            Item FindNew(Item plc_hldr, string[] fullCodes)
             {
-                if (!encoder.CutCodes(fullCodes, len, out var new_codes))
-                    throw new Exception("无法为占位的词编码。未操作。");
-                if (new_codes.Length == 1 && !Dict.HasCode(new_codes[0]))
+                var range = ui.ValidCodeLengthArray.Where(l => l > plc_hldr.Code.Length).Order();
+                var new_code = IterFind(fullCodes, range);
+                return new_code.Length > 0
+                    ? new Item(plc_hldr.Word, new_code, plc_hldr.Priority)
+                    : throw new Exception("没有为占位的词找到匹配且空余的长码。未操作。");
+
+                string IterFind(string[] fullCodes, IOrderedEnumerable<int> range)
                 {
-                    new_code = new_codes[0];
-                    break;
+                    foreach (var len in range)
+                    {
+                        if (!encoder.CutCodes(fullCodes, len, out var new_codes))
+                            throw new Exception("无法为占位的词编码。未操作。");
+                        if (new_codes.Length == 1 && !Dict.HasCode(new_codes[0]))
+                            return new_codes[0];
+                    }
+                    return string.Empty;
                 }
             }
-            return new_code.Length > 0
-                ? new Item(plc_hldr.Word, new_code, plc_hldr.Priority)
-                : throw new Exception("没有为占位的词找到匹配且空余的长码。未操作。");
         }
 
         #endregion
 
-        #region 更新搜索结果
+        #region 应用修改并保存
 
-        private void RefreshAdd(Item newItem)
-            => ui.OriginResultArray = [.. ui.OriginResultArray
-                .Append(newItem)
-                .OrderBy(x => x.Code)];
+        private bool Unsaved { get; set; } = false;
 
-        private void RefreshDel(int index)
-            => ui.OriginResultArray = [.. ui.OriginResultArray
-                .Where((element, idx) => idx != index)
-                .OrderBy(x => x.Code)];
+        private void ModBtn_Clicked(object sender, EventArgs e)
+        {
+            // 没有修改则恒为真，有修改则为修改的成败
+            var modSuccess = !Modified()
+                             || Simp.Try("应用修改", ApplyModify);
+
+            if (modSuccess && SaveDict())
+            {
+                Simp.Show("应用并保存成功！");
+                Unsaved = ui.AllowMod = false;
+            }
+        }
+
+        private static bool SaveDict()
+        {
+            if (Simp.Try("保存修改后的词库失败，将自动保存至默认位置。", () => Dict.Save()))
+                return true;
+
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Dict");
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            var path = Path.Combine(dir, $"RimeTyrant_Modified.dict.yaml");
+            if (File.Exists(path))
+                Simp.Show("默认位置已存在词库文件，将覆写");
+
+            return Simp.Try("保存至默认位置也失败了。若想避免数据损失，请照着日志手动修改。",
+                            () => Dict.Save(path));
+        }
+
+        private void ApplyModify()
+        {
+            var modified = ui.ResultArray
+                .Where(item => !ui.OriginResultArray.Any(x => x.Equals(item)))
+                .Select(item => item.Clone())
+                .ToArray();
+
+            if (modified.Length == 0)
+                throw new Exception("没有任何修改！");
+
+            var discards = ui.OriginResultArray
+                .Where(item => !ui.ResultArray.Any(x => x.Equals(item)))
+                .Select(item => item.Clone())
+                .ToArray();
+
+            if (modified.Length != discards.Length)
+                throw new Exception("修改前后数量不一致！这是不该出现的错误，如果出现请联系开发者。");
+
+            Logger.Add($"---以下是手动修改的内容，共{modified.Length}项。---");
+            Dict.RemoveAll(discards);
+            Dict.AddAll(modified);
+            Logger.Add($"---成功完成{modified.Length}项手动修改。---");
+        }
 
         #endregion
     }

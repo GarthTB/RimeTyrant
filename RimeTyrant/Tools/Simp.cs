@@ -6,25 +6,13 @@
     internal static class Simp
     {
         /// <summary>
-        /// 尝试执行操作，静默返回成功性
+        /// TryCatch块的简化
         /// </summary>
-        public static bool Try(Action action)
-        {
-            try
-            {
-                action();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 尝试执行名为name的操作，成功无提示返回true，否则报错并返回false
-        /// </summary>
-        public static bool Try(string name, Action action)
+        /// <param name="name">显示在错误弹窗中的内容</param>
+        /// <param name="action">要try的动作</param>
+        /// <param name="showError">是否在catch时显示错误</param>
+        /// <returns>有catch则false，无catch则true</returns>
+        public static bool Try(string name, Action action, bool showError = true)
         {
             try
             {
@@ -33,7 +21,8 @@
             }
             catch (Exception ex)
             {
-                Show($"{name}出错：\n{ex.Message}");
+                if (showError)
+                    Show($"{name}出错：\n{ex.Message}");
                 return false;
             }
         }

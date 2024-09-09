@@ -58,7 +58,7 @@ namespace RimeTyrant.Codes
 
         public override bool CutCode(string fullCode, int length, out string shortCode)
         {
-            shortCode = Simp.Try(() => _ = fullCode[..length])
+            shortCode = Simp.Try("直接截取前length个字符", () => _ = fullCode[..length], false)
                         ? fullCode[..length]
                         : string.Empty;
             return shortCode.Length > 0;
