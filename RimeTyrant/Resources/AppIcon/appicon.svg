@@ -1,12 +1,10 @@
 <svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
  <g>
-  <title>Layer 1</title>
-  <rect rx="100" id="svg_8" height="512" width="512" y="0" x="0" stroke-width="0" stroke="#000" fill="#d6632a"/>
-  <rect stroke="#000" rx="8" id="svg_2" height="32" width="320" y="48" x="95.82603" stroke-width="0" fill="#3f1e07"/>
-  <rect stroke="#000" rx="8" id="svg_4" height="32" width="384" y="112" x="63.82604" stroke-width="0" fill="#512609"/>
-  <rect stroke="#000" rx="8" id="svg_5" height="32" width="384" y="368" x="63.82604" stroke-width="0" fill="#512609"/>
-  <rect stroke="#000" rx="8" id="svg_6" height="32" width="320" y="432" x="95.82603" stroke-width="0" fill="#3f1e07"/>
-  <text font-weight="bold" xml:space="preserve" text-anchor="start" font-size="190" id="svg_7" y="323" x="38" stroke-width="0" stroke="#000" fill="#efe8e1">DICT</text>
+  <rect rx="100" height="512" width="512" y="0" x="0" fill="#d6632a"/>
+  <rect rx="8" height="32" width="320" y="48" x="96" fill="#3f1e07"/>
+  <rect rx="8" height="32" width="384" y="112" x="64" fill="#512609"/>
+  <rect rx="8" height="32" width="384" y="368" x="64" fill="#512609"/>
+  <rect rx="8" height="32" width="320" y="432" x="96" fill="#3f1e07"/>
+  <text text-anchor="middle" font-size="188" y="327" x="256" font-weight="bold" fill="#efe8e1">DICT</text>
  </g>
-
 </svg>
