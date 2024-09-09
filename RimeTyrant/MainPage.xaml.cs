@@ -51,7 +51,7 @@ namespace RimeTyrant
         #region 涉及多个控件的逻辑
 
         /// <summary>
-        /// 检查是否允许添加词，仅由五个控件触发：加词框、自动编码选单、手动编码框、勾选优先级、优先级框
+        /// 检查是否允许添加词，由左边8个控件触发
         /// </summary>
         private void CheckAddBtn()
         {
@@ -81,15 +81,15 @@ namespace RimeTyrant
         /// </summary>
         private void LoadAutoCodes()
         {
-            var load = Dict.Loaded
-                       && ui.UseAutoEncode
-                       && !string.IsNullOrEmpty(ui.EncodeMethod)
-                       && encoder.Ready(ui.EncodeMethod)
-                       && encoder.Encode(ui.WordToAdd, out var fullCodes)
-                       ? fullCodes : [];
-            ui.OriginAutoCodeArray = load;
+            var fc = Dict.Loaded
+                     && ui.UseAutoEncode
+                     && !string.IsNullOrEmpty(ui.EncodeMethod)
+                     && encoder.Ready(ui.EncodeMethod)
+                     && encoder.Encode(ui.WordToAdd, out var fullCodes)
+                     ? fullCodes : [];
+            ui.OriginAutoCodeArray = fc;
             // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
-            ui.AutoCodeColor = load.Length > 1
+            ui.AutoCodeColor = fc.Length > 1
                 ? "IndianRed"
                 : CodeToSearch.TextColor.ToHex();
         }
@@ -143,21 +143,23 @@ namespace RimeTyrant
         {
             await InitializeEncoder();
             LoadAutoCodes();
+            CheckAddBtn();
         }
 
         private async void EncodeMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
             await InitializeEncoder();
             LoadAutoCodes();
+            CheckAddBtn();
         }
 
-        private void AutoCode_SelectedIndexChanged(object sender, EventArgs e)
+        private void CodeLength_SelectedIndexChanged(object sender, EventArgs e)
         {
             AutoSearch();
             CheckAddBtn();
         }
 
-        private void CodeLength_SelectedIndexChanged(object sender, EventArgs e)
+        private void AutoCode_SelectedIndexChanged(object sender, EventArgs e)
         {
             AutoSearch();
             CheckAddBtn();
@@ -378,7 +380,7 @@ namespace RimeTyrant
 
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Dict");
             if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
+                _ = Directory.CreateDirectory(dir);
 
             var path = Path.Combine(dir, $"RimeTyrant_Modified.dict.yaml");
             if (File.Exists(path))

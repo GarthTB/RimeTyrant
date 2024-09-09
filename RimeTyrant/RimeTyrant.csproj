@@ -36,7 +36,15 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+
+		<Title>Rime词库管理器</Title>
+		<Version>1.0.0</Version>
+		<Authors>Garth</Authors>
+		<Copyright>© Garth 2024</Copyright>
+		<PackageIcon>512.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Description>跨平台、高性能的Rime输入法词库管理器</Description>
+		<RepositoryUrl>https://github.com/GarthTB/RimeTyrant</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -74,6 +82,13 @@
 	  <MauiXaml Update="LogPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Resources\AppIcon\512.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
