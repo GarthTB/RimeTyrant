@@ -195,7 +195,7 @@ namespace RimeTyrant
 
             if (success)
             {
-                ui.OriginResultArray = [.. ui.OriginResultArray.Append(newItem).OrderBy(x => x.Code)];
+                RefreshAdd(newItem);
                 ui.AllowAdd = false; // 避免重复添加
                 ui.AllowMod = Unsaved = true;
             }
@@ -214,12 +214,11 @@ namespace RimeTyrant
                 SelectedIndex = e.SelectedItemIndex;
                 ui.AllowDel = true;
                 ui.AllowCut = item.Code != ui.CodeToSearch;
+                return;
             }
-            else
-            {
-                SelectedIndex = -1;
-                ui.AllowDel = ui.AllowCut = false;
-            }
+            SelectedIndex = -1;
+            ui.AllowDel = false;
+            ui.AllowCut = false;
         }
 
         #endregion
@@ -249,9 +248,7 @@ namespace RimeTyrant
 
             if (success)
             {
-                ui.OriginResultArray = [.. ui.OriginResultArray
-                    .Where((element, idx) => idx != SelectedIndex)
-                    .OrderBy(x => x.Code)];
+                RefreshDel(SelectedIndex);
                 ui.AllowDel = false;
                 ui.AllowMod = Unsaved = true;
             }
@@ -263,28 +260,99 @@ namespace RimeTyrant
 
         private void CutBtn_Clicked(object sender, EventArgs e)
         {
-            var oriItem = ui.OriginResultArray[SelectedIndex].Clone(); // 选中的词
-            var sLen = ui.CodeToSearch.Length; // 要把选中的词缩到这么短
-            if (encoder.CutCode(oriItem.Code, sLen, out var sCode)) // 缩短编码
+            if (Simp.Try("自动截短", CutTheItem))
             {
-                var newItem = new Item(oriItem.Word, sCode, oriItem.Priority); // 缩短后的词
-                var blocker = ui.OriginResultArray.FirstOrDefault(x => x.Code == sCode); // 占位的词
-                var success = blocker is null
-                    ? OneWay(oriItem, newItem, sCode) // 没有占位词，直接移动
-                    : TwoWay(oriItem, newItem, sCode, blocker); // 有占位词，双向移动
+                ui.AllowCut = false;
+                ui.AllowMod = Unsaved = true;
             }
-            else Simp.Show("无法自动截短！未操作。");
         }
 
-        private static bool OneWay(Item oriItem, Item newItem, string sCode)
-            => Simp.Try("除去选中的长词", () => Dict.Remove(oriItem))
-               && Simp.Try($"截至{sCode.Length}码", () => Dict.Add(newItem));
-
-        private bool TwoWay(Item oriItem, Item newItem, string sCode, Item blocker)
+        private void CutTheItem()
         {
-            var lLen = oriItem.Code.Length; // 要把占位的词扩到这么长
-            encoder.Lengthen(blocker.Word, sCode, out var lCode);
+            var sel_item = ui.OriginResultArray[SelectedIndex].Clone();
+            var tar_leng = ui.CodeToSearch.Length;
+            if (!encoder.CutCode(sel_item.Code, tar_leng, out var cut_code))
+                throw new Exception("无法自动截短。未操作。");
+            if (cut_code != ui.CodeToSearch)
+                throw new Exception("选中词条的短码和搜索框内的编码不一致。未操作。");
+            var cut_item = new Item(sel_item.Word, cut_code, sel_item.Priority);
+            // 检查截短后的编码是否和现有的编码冲突，如果有，则要加长占位的码
+            var plc_hldr = ui.OriginResultArray.FirstOrDefault(x => x.Code == cut_code)?.Clone();
+            if (plc_hldr is null)
+            {
+                if (Simp.Try("删除选中的过长条目", () => Dict.Remove(sel_item, "删除选中的过长条目"))
+                    && Simp.Try("添加截短后的新条目", () => Dict.Add(cut_item, "添加截短后的新条目")))
+                {
+                    RefreshDel(SelectedIndex);
+                    RefreshAdd(cut_item);
+                }
+            }
+            else
+            {
+                var index = Array.FindIndex(ui.OriginResultArray, x => x.Code == cut_code);
+                var moved = TwoWays(sel_item, plc_hldr);
+                if (Simp.Try("删除选中的过长条目", () => Dict.Remove(sel_item, "删除选中的过长条目"))
+                    && Simp.Try("添加截短后的新条目", () => Dict.Add(cut_item, "添加截短后的新条目"))
+                    && Simp.Try("删除占位的短码条目", () => Dict.Remove(plc_hldr, "删除占位的短码条目"))
+                    && Simp.Try("添加加长后的新条目", () => Dict.Add(moved, "添加加长后的新条目")))
+                {
+                    RefreshDel(SelectedIndex);
+                    RefreshAdd(cut_item);
+                    RefreshDel(index);
+                    RefreshAdd(moved);
+                }
+            }
         }
+
+        private Item TwoWays(Item sel_item, Item plc_hldr)
+        {
+            if (!encoder.Encode(plc_hldr.Word, out var fullCodes))
+                throw new Exception("无法为占位的词编码。未操作。");
+            var cut_codes = fullCodes.Select(c
+                => !encoder.CutCode(c, sel_item.Code.Length, out var cut_c)
+                    ? throw new Exception("无法自动截短占位词的全码。未操作。")
+                    : cut_c);
+            var moved = cut_codes.Contains(sel_item.Code)
+                ? Cross(sel_item, plc_hldr)
+                : FindNew(plc_hldr, fullCodes);
+            return moved;
+        }
+
+        private static Item Cross(Item sel_item, Item plc_hldr)
+            => new(plc_hldr.Word, sel_item.Code, plc_hldr.Priority);
+
+        private Item FindNew(Item plc_hldr, string[] fullCodes)
+        {
+            var range = ui.ValidCodeLengthArray.Where(l => l > plc_hldr.Code.Length).Order();
+            var new_code = string.Empty;
+            foreach (var len in range)
+            {
+                if (!encoder.CutCodes(fullCodes, len, out var new_codes))
+                    throw new Exception("无法为占位的词编码。未操作。");
+                if (new_codes.Length == 1 && !Dict.HasCode(new_codes[0]))
+                {
+                    new_code = new_codes[0];
+                    break;
+                }
+            }
+            return new_code.Length > 0
+                ? new Item(plc_hldr.Word, new_code, plc_hldr.Priority)
+                : throw new Exception("没有为占位的词找到匹配且空余的长码。未操作。");
+        }
+
+        #endregion
+
+        #region 更新搜索结果
+
+        private void RefreshAdd(Item newItem)
+            => ui.OriginResultArray = [.. ui.OriginResultArray
+                .Append(newItem)
+                .OrderBy(x => x.Code)];
+
+        private void RefreshDel(int index)
+            => ui.OriginResultArray = [.. ui.OriginResultArray
+                .Where((element, idx) => idx != index)
+                .OrderBy(x => x.Code)];
 
         #endregion
     }

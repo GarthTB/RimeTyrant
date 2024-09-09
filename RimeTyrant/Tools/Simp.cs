@@ -1,7 +1,7 @@
 ﻿namespace RimeTyrant.Tools
 {
     /// <summary>
-    /// 用以简化代码
+    /// 粗暴地简化代码
     /// </summary>
     internal static class Simp
     {

@@ -72,6 +72,9 @@ namespace RimeTyrant.Tools
                && _code.AllowAutoCode
                && Code.IsValidPriority(priority);
 
+        /// <summary>
+        /// 获取一个词组的所有全码
+        /// </summary>
         public bool Encode(string word, out string[] fullCodes)
         {
             fullCodes = [];
@@ -80,6 +83,9 @@ namespace RimeTyrant.Tools
                    && _code.Encode(word, out fullCodes);
         }
 
+        /// <summary>
+        /// 用全码推导出指定长度的短码
+        /// </summary>
         public bool CutCode(string fullCode, int length, out string shortCode)
         {
             shortCode = string.Empty;
@@ -88,6 +94,9 @@ namespace RimeTyrant.Tools
                    && _code.CutCode(fullCode, length, out shortCode);
         }
 
+        /// <summary>
+        /// 用全码推导出指定长度的短码
+        /// </summary>
         public bool CutCodes(string[] fullCodes, int length, out string[] shortCodes)
         {
             shortCodes = [];

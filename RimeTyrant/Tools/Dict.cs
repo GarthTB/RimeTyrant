@@ -55,20 +55,26 @@ namespace RimeTyrant.Tools
                     : $"{sd.Word}\t{sd.Code}\t{sd.Priority}");
         }
 
-        public static void Add(Item entry)
+        /// <summary>
+        /// 第二个参数为日志信息
+        /// </summary>
+        public static void Add(Item entry, string? message = null)
         {
             if (HasEntry(entry))
                 throw new Exception("词库中已存在该词条！未添加！");
             if (!_dict.Add(entry))
                 throw new Exception($"无法添加词条：{entry.Word} {entry.Code} {entry.Priority}");
-            Logger.Add("添加", entry);
+            Logger.Add(message ?? "添加", entry);
         }
 
-        public static void Remove(Item entry)
+        /// <summary>
+        /// 第二个参数为日志信息
+        /// </summary>
+        public static void Remove(Item entry, string? message = null)
         {
             if (_dict.RemoveWhere(e => e.Equals(entry)) < 1)
                 throw new Exception($"找不到词条：{entry.Word} {entry.Code} {entry.Priority}");
-            Logger.Add("删除", entry);
+            Logger.Add(message ?? "删除", entry);
         }
 
         public static void AddAll(Item[] entries)
