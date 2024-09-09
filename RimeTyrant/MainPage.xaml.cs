@@ -41,7 +41,7 @@ namespace RimeTyrant
                 WordToAdd.Text = string.Empty;
                 ManualEncode.Text = string.Empty;
                 Priority.Text = string.Empty;
-                ui.CodeToSearch = string.Empty;
+                CodeToSearch.Text = string.Empty;
             }
         }
 
@@ -57,10 +57,10 @@ namespace RimeTyrant
         /// </summary>
         private void CheckAddBtn()
         {
-            var codeValid = (ui.UseAutoEncode && encoder.IsValidCode(ui.AutoCode))
-                            || (ui.UseManualEncode && encoder.IsValidCode(ManualEncode.Text));
-            var priorityValid = !ui.UsePriority
-                                || (ui.UsePriority && encoder.IsValidPriority(Priority.Text));
+            var codeValid = (UseAutoEncode.IsChecked && encoder.IsValidCode(ui.AutoCode))
+                            || (!UseAutoEncode.IsChecked && encoder.IsValidCode(ManualEncode.Text));
+            var priorityValid = !UsePriority.IsChecked
+                                || (UsePriority.IsChecked && encoder.IsValidPriority(Priority.Text));
             AddBtn.IsEnabled = Dict.Loaded
                                && codeValid
                                && priorityValid;
@@ -72,10 +72,13 @@ namespace RimeTyrant
         private async Task InitializeEncoder()
         {
             if (Dict.Loaded
-                && ui.UseAutoEncode
+                && UseAutoEncode.IsChecked
                 && !string.IsNullOrEmpty(ui.EncodeMethod)
                 && !encoder.Ready(ui.EncodeMethod))
-                (ui.ValidCodeLengths, ui.CodeLengthIndex) = await encoder.SetCode(ui.EncodeMethod);
+            {
+                (ui.ValidCodeLengths, CodeLength.SelectedIndex) = await encoder.SetCode(ui.EncodeMethod);
+                UseAutoEncode.IsChecked = encoder.Ready(ui.EncodeMethod);
+            }
         }
 
         /// <summary>
@@ -84,7 +87,7 @@ namespace RimeTyrant
         private void LoadAutoCodes()
         {
             var fc = Dict.Loaded
-                     && ui.UseAutoEncode
+                     && UseAutoEncode.IsChecked
                      && !string.IsNullOrEmpty(ui.EncodeMethod)
                      && encoder.Ready(ui.EncodeMethod)
                      && encoder.Encode(WordToAdd.Text, out var fullCodes)
@@ -102,9 +105,9 @@ namespace RimeTyrant
         private void AutoSearch()
         {
             if (Dict.Loaded)
-                ui.CodeToSearch = ui.UseAutoEncode && !string.IsNullOrEmpty(ui.AutoCode)
+                CodeToSearch.Text = UseAutoEncode.IsChecked && !string.IsNullOrEmpty(ui.AutoCode)
                     ? ui.AutoCode
-                    : ui.UseManualEncode && !string.IsNullOrEmpty(ManualEncode.Text)
+                    : !UseAutoEncode.IsChecked && !string.IsNullOrEmpty(ManualEncode.Text)
                     ? ManualEncode.Text
                     : string.Empty;
         }
@@ -193,10 +196,10 @@ namespace RimeTyrant
 
         private void AddBtn_Clicked(object sender, EventArgs e)
         {
-            var code = ui.UseAutoEncode
+            var code = UseAutoEncode.IsChecked
                 ? ui.AutoCode ?? string.Empty // 如果为空，不应该通过合法检查
                 : ManualEncode.Text;
-            var priority = ui.UsePriority && Priority.Text.Length != 0
+            var priority = UsePriority.IsChecked && Priority.Text.Length != 0
                 ? Priority.Text
                 : "0";
             var newItem = new Item(WordToAdd.Text, code, priority);
@@ -222,13 +225,13 @@ namespace RimeTyrant
             if (e.SelectedItem is Item item)
             {
                 SelectedIndex = e.SelectedItemIndex;
-                ui.AllowDel = true;
-                ui.AllowCut = item.Code != ui.CodeToSearch;
+                DelBtn.IsEnabled = true;
+                CutBtn.IsEnabled = item.Code != CodeToSearch.Text;
                 return;
             }
             SelectedIndex = -1;
-            ui.AllowDel = false;
-            ui.AllowCut = false;
+            DelBtn.IsEnabled = false;
+            CutBtn.IsEnabled = false;
         }
 
         #endregion
@@ -259,7 +262,7 @@ namespace RimeTyrant
             if (success)
             {
                 RefreshDel(SelectedIndex);
-                ui.AllowDel = false;
+                DelBtn.IsEnabled = false;
                 ModBtn.IsEnabled = Unsaved = true;
             }
         }
@@ -272,7 +275,7 @@ namespace RimeTyrant
         {
             if (Simp.Try("自动截短", CutTheItem))
             {
-                ui.AllowCut = false;
+                CutBtn.IsEnabled = false;
                 ModBtn.IsEnabled = Unsaved = true;
             }
         }
