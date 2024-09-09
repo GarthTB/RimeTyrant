@@ -20,8 +20,11 @@ namespace RimeTyrant.Tools
                && _code.AllowAutoCode;
 
         /// <summary>
-        /// 设置编码方案，返回值为所有有效码长和默认码长的所在的索引
+        /// 编码方案类的构造函数封装
         /// </summary>
+        /// <returns>
+        /// 所有有效码长数组, 默认码长的索引
+        /// </returns>
         public async Task<(int[], int)> SetCode(string codeName)
         {
             try
@@ -69,28 +72,28 @@ namespace RimeTyrant.Tools
                && _code.AllowAutoCode
                && Code.IsValidPriority(priority);
 
-        public bool Lengthen(string word, string prefix, out string code)
+        public bool Encode(string word, out string[] fullCodes)
         {
-            code = string.Empty;
+            fullCodes = [];
             return _code is not null
-               && _code.AllowAutoCode
-               && _code.Lengthen(word, prefix, out code);
+                   && _code.AllowAutoCode
+                   && _code.Encode(word, out fullCodes);
         }
 
-        public bool Shorten(string[] fullCodes, int length, out string[] shortCodes)
+        public bool CutCode(string fullCode, int length, out string shortCode)
+        {
+            shortCode = string.Empty;
+            return _code is not null
+                   && _code.AllowAutoCode
+                   && _code.CutCode(fullCode, length, out shortCode);
+        }
+
+        public bool CutCodes(string[] fullCodes, int length, out string[] shortCodes)
         {
             shortCodes = [];
             return _code is not null
                    && _code.AllowAutoCode
-                   && _code.Shorten(fullCodes, length, out shortCodes);
-        }
-
-        public bool Encode(string text, out string[] codes)
-        {
-            codes = [];
-            return _code is not null
-                   && _code.AllowAutoCode
-                   && _code.Encode(text, out codes);
+                   && _code.CutCodes(fullCodes, length, out shortCodes);
         }
     }
 }

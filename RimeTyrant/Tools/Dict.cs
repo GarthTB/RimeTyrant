@@ -35,7 +35,7 @@ namespace RimeTyrant.Tools
             if (_dict.Count == 0)
                 throw new Exception("词库文件为空！");
             Path = path;
-            Logger.Add($"词库：{path}");
+            Logger.Add($"词库：{path}，共{_dict.Count}个有效条目，{_shit.Count}个无效条目。");
         }
 
         public static void Save(string? path = null)
@@ -64,17 +64,17 @@ namespace RimeTyrant.Tools
             Logger.Add("添加", entry);
         }
 
-        public static void AddAll(Item[] entries)
-        {
-            foreach (var entry in entries)
-                Add(entry);
-        }
-
         public static void Remove(Item entry)
         {
             if (_dict.RemoveWhere(e => e.Equals(entry)) < 1)
                 throw new Exception($"找不到词条：{entry.Word} {entry.Code} {entry.Priority}");
             Logger.Add("删除", entry);
+        }
+
+        public static void AddAll(Item[] entries)
+        {
+            foreach (var entry in entries)
+                Add(entry);
         }
 
         public static void RemoveAll(Item[] entries)

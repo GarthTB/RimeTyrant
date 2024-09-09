@@ -165,7 +165,7 @@ namespace RimeTyrant.Tools
                 {
                     _codeLengthIndex = value;
                     AutoCodeArray = CodeLength != -1
-                                    && encoder.Shorten(OriginAutoCodeArray, CodeLength, out var now)
+                                    && encoder.CutCodes(OriginAutoCodeArray, CodeLength, out var now)
                                         ? now : [];
                     OnPropertyChanged(nameof(CodeLengthIndex));
                 }
@@ -251,7 +251,7 @@ namespace RimeTyrant.Tools
                 {
                     _originAutoCodeArray = value;
                     AutoCodeArray = CodeLength != -1
-                                    && encoder.Shorten(value, CodeLength, out var now)
+                                    && encoder.CutCodes(value, CodeLength, out var now)
                                         ? now : [];
                 }
             }

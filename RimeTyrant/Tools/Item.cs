@@ -1,10 +1,16 @@
 ﻿namespace RimeTyrant.Tools
 {
+    /// <summary>
+    /// Item类，用于存储一个词条（Entry这个名字被用了）
+    /// </summary>
     internal class Item
     {
-        // 这里不能用字段，因为字段不能显示在ItemList里
+        // 字段不能显示在ItemList里，所以用属性
         public string Word { get; set; } = string.Empty;
+
         public string Code { get; set; } = string.Empty;
+
+        // 因为要用于写入时的排序，所以用int，不用string
         public int Priority { get; set; } = 0;
 
         public Item Clone() => new(Word, Code, Priority);

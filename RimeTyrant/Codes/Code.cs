@@ -4,7 +4,7 @@ using System.Text;
 namespace RimeTyrant.Codes
 {
     /// <summary>
-    /// 所有编码方案的基类，一共5个需要实现的方法
+    /// 所有编码方案的基类，一共4个需要实现的方法
     /// </summary>
     internal abstract class Code
     {
@@ -34,7 +34,7 @@ namespace RimeTyrant.Codes
             }
             if (Dict.Count == 0)
                 throw new Exception("单字文件为空！");
-            Logger.Add($"单字：{path}");
+            Logger.Add($"单字：{path}，共{Dict.Count}个有效条目。");
         }
 
         #region 查字是否存在
@@ -45,7 +45,7 @@ namespace RimeTyrant.Codes
 
         #endregion
 
-        #region 词、码、优先级的有效性（暂且认为是通用的，要改就改此文件、派生类、Encoder）
+        #region 词、码、优先级的有效性（暂且认为是通用的）
 
         public static bool IsValidWord(string? word)
             => !string.IsNullOrWhiteSpace(word);
@@ -60,61 +60,27 @@ namespace RimeTyrant.Codes
 
         #endregion
 
-        #region 加长编码
-
-        public bool Lengthen(string word, string prefix, out string code)
-        {
-            code = string.Empty;
-            return Encode(word, out string[] codes)
-                   && FindBlank(codes, prefix, out code);
-        }
-
-        /// <summary>
-        /// 加长编码到剩余的最短空位，用于截短功能
-        /// </summary>
-        protected abstract bool FindBlank(string[] codes, string prefix, out string code);
-
-        #endregion
-
-        #region 获取简码
-
-        public bool Shorten(string[] fullCodes, int length, out string[] shortCodes)
-        {
-            shortCodes = new string[fullCodes.Length];
-            for (int i = 0; i < fullCodes.Length; i++)
-                if (!Shorten(fullCodes[i], length, out shortCodes[i]))
-                    return false;
-            return true;
-        }
-
-        /// <summary>
-        /// 用全码推导出指定长度的简码
-        /// </summary>
-        protected abstract bool Shorten(string fullCode, int length, out string shortCode);
-
-        #endregion
-
         #region 自动编码
 
-        public bool Encode(string word, out string[] codes)
+        /// <summary>
+        /// 获取一个词组的所有全码
+        /// </summary>
+        public bool Encode(string word, out string[] fullCodes)
         {
-            codes = [];
+            fullCodes = [];
             return GetKeyChars(word, out char[] keyChars)
                    && GetKeyElements(keyChars, out char[][][] keyElements)
-                   && CodesOf(keyElements, out codes);
+                   && CodesOf(keyElements, out fullCodes);
         }
 
         /// <summary>
-        /// 提取一个词中所有参与编码的关键字符
+        /// 提取一个词中，所有参与编码的关键字符
         /// </summary>
         protected abstract bool GetKeyChars(string originWord, out char[] keyChars);
 
         /// <summary>
-        /// 提取每个关键字符的编码中，参与编码的码元
+        /// 提取每个关键字符的编码中，所有参与编码的码元
         /// </summary>
-        /// <param name="keyElements">
-        /// 第一维是每个关键字，第二维是一个关键字的每个全码，第三维是一个全码中每个参与编码的码元
-        /// </param>
         protected abstract bool GetKeyElements(char[] keyChars, out char[][][] keyElements);
 
         /// <summary>
@@ -123,7 +89,28 @@ namespace RimeTyrant.Codes
         /// <param name="keyElements">
         /// 第一维是每个关键字，第二维是一个关键字的每个全码，第三维是一个全码中每个参与编码的码元
         /// </param>
-        protected abstract bool CodesOf(char[][][] keyElements, out string[] codes);
+        protected abstract bool CodesOf(char[][][] keyElements, out string[] fullCodes);
+
+        #endregion
+
+        #region 缩短编码
+
+        /// <summary>
+        /// 用全码推导出指定长度的短码
+        /// </summary>
+        public bool CutCodes(string[] fullCodes, int length, out string[] shortCodes)
+        {
+            shortCodes = new string[fullCodes.Length];
+            for (int i = 0; i < fullCodes.Length; i++)
+                if (!CutCode(fullCodes[i], length, out shortCodes[i]))
+                    return false;
+            return true;
+        }
+
+        /// <summary>
+        /// 用全码推导出指定长度的短码
+        /// </summary>
+        public abstract bool CutCode(string fullCode, int length, out string shortCode);
 
         #endregion
     }

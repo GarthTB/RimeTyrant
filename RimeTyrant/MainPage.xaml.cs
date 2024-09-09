@@ -93,8 +93,8 @@ namespace RimeTyrant
                        && ui.UseAutoEncode
                        && !string.IsNullOrEmpty(ui.EncodeMethod)
                        && encoder.Ready(ui.EncodeMethod)
-                       && encoder.Encode(ui.WordToAdd, out var codes)
-                       ? codes : [];
+                       && encoder.Encode(ui.WordToAdd, out var fullCodes)
+                       ? fullCodes : [];
             ui.OriginAutoCodeArray = load;
             // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
             ui.AutoCodeColor = load.Length > 1
@@ -263,7 +263,27 @@ namespace RimeTyrant
 
         private void CutBtn_Clicked(object sender, EventArgs e)
         {
+            var oriItem = ui.OriginResultArray[SelectedIndex].Clone(); // 选中的词
+            var sLen = ui.CodeToSearch.Length; // 要把选中的词缩到这么短
+            if (encoder.CutCode(oriItem.Code, sLen, out var sCode)) // 缩短编码
+            {
+                var newItem = new Item(oriItem.Word, sCode, oriItem.Priority); // 缩短后的词
+                var blocker = ui.OriginResultArray.FirstOrDefault(x => x.Code == sCode); // 占位的词
+                var success = blocker is null
+                    ? OneWay(oriItem, newItem, sCode) // 没有占位词，直接移动
+                    : TwoWay(oriItem, newItem, sCode, blocker); // 有占位词，双向移动
+            }
+            else Simp.Show("无法自动截短！未操作。");
+        }
 
+        private static bool OneWay(Item oriItem, Item newItem, string sCode)
+            => Simp.Try("除去选中的长词", () => Dict.Remove(oriItem))
+               && Simp.Try($"截至{sCode.Length}码", () => Dict.Add(newItem));
+
+        private bool TwoWay(Item oriItem, Item newItem, string sCode, Item blocker)
+        {
+            var lLen = oriItem.Code.Length; // 要把占位的词扩到这么长
+            encoder.Lengthen(blocker.Word, sCode, out var lCode);
         }
 
         #endregion

@@ -1,38 +1,12 @@
-﻿namespace RimeTyrant.Codes
+﻿using RimeTyrant.Tools;
+
+namespace RimeTyrant.Codes
 {
     /// <summary>
     /// 星空键道6，2024年的规则
     /// </summary>
     internal class JD(string path) : Code(path)
     {
-        protected override bool FindBlank(string[] codes, string prefix, out string code)
-        {
-            code = string.Empty;
-            var _codes = codes.Where(s => s.StartsWith(prefix))
-                              .Distinct()
-                              .ToArray();
-            if (_codes.Length != 1)
-                return false;
-
-            var result = _codes[0];
-            for (int i = prefix.Length + 1; i < 6; i++)
-                if (!Tools.Dict.HasCode(result[..i]))
-                    code = result[..i];
-            code = result;
-            return true;
-        }
-
-        protected override bool Shorten(string fullCode, int length, out string shortCode)
-        {
-            if (length < 0 || length > fullCode.Length)
-            {
-                shortCode = fullCode;
-                return false;
-            }
-            shortCode = fullCode[..length];
-            return true;
-        }
-
         protected override bool GetKeyChars(string originWord, out char[] keyChars)
         {
             var vc = originWord.Where(Contains).ToArray();
@@ -54,7 +28,7 @@
             return keyElements.All(x => x.Length > 0);
         }
 
-        protected override bool CodesOf(char[][][] keyElements, out string[] codes)
+        protected override bool CodesOf(char[][][] keyElements, out string[] fullCodes)
         {
             IEnumerable<char> Choose(int i, int j) => keyElements[i].Select(x => x[j]);
 
@@ -70,16 +44,24 @@
                                         _ = result.Add($"{c1}{c2}{c3}{c4}{c5}{c6}");
                 return [.. result.Order()];
             }
-            codes = keyElements.Length switch
+            fullCodes = keyElements.Length switch
             {
-                //                 ┌──┬───这两位代表第2码：
+                //                 ┌──┬───这两位代表全码的第2码：
                 //                 ┌──────从第1个字的所有码里
                 //                 │  ┌───取每个码的第2个码元
                 2 => Compose(0, 0, 0, 1, 1, 0, 1, 1, 0, 2, 1, 2),
                 3 => Compose(0, 0, 1, 0, 2, 0, 0, 2, 1, 2, 2, 2),
                 _ => Compose(0, 0, 1, 0, 2, 0, 3, 0, 0, 2, 1, 2),
             };
-            return codes.All(code => code.Length == 6);
+            return fullCodes.All(code => code.Length == 6);
+        }
+
+        public override bool CutCode(string fullCode, int length, out string shortCode)
+        {
+            shortCode = Simp.Try(() => _ = fullCode[..length])
+                        ? fullCode[..length]
+                        : string.Empty;
+            return shortCode.Length > 0;
         }
     }
 }
