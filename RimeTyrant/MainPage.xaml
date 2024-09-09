@@ -143,6 +143,7 @@
                     x:Name="AddBtn"
                     Grid.Column="2"
                     Clicked="AddBtn_Clicked"
+                    IsEnabled="False"
                     Text="添加" />
             </Grid>
         </Grid>
@@ -244,6 +245,7 @@
                     x:Name="ModBtn"
                     Grid.Column="2"
                     Clicked="ModBtn_Clicked"
+                    IsEnabled="False"
                     Text="应用并保存" />
             </Grid>
         </Grid>

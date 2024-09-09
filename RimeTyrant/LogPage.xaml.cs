@@ -10,6 +10,15 @@ public partial class LogPage : ContentPage
     private void ContentPage_Loaded(object sender, EventArgs e)
         => LogLabel.Text = Logger.ReadAll();
 
-    private void ExportBtn_Clicked(object sender, EventArgs e)
-        => Simp.Try("导出日志", Logger.Save);
+    private async void ExportBtn_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            await Logger.Save(this);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("提示", $"未导出日志：\n{ex.Message}", "好的");
+        }
+    }
 }

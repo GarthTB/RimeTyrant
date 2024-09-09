@@ -22,20 +22,19 @@
             catch (Exception ex)
             {
                 if (showError)
-                    Show($"{name}出错：\n{ex.Message}");
+                    _ = Show($"{name}出错：\n{ex.Message}");
                 return false;
             }
         }
 
         /// <summary>
-        /// 显示一个提示框
+        /// 在MainPage上显示提示框
         /// </summary>
-        public static void Show(string message)
-            => MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                var currentPage = Application.Current?.MainPage;
-                if (currentPage is not null)
-                    await currentPage.DisplayAlert("提示", message, "好的");
-            });
+        public static async Task Show(string message)
+        {
+            var mainPage = Application.Current?.MainPage;
+            if (mainPage is not null)
+                await mainPage.DisplayAlert("提示", message, "好的");
+        }
     }
 }

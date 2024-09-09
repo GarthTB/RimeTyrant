@@ -24,20 +24,20 @@ namespace RimeTyrant
 
         #region 加载、日志
 
-        private void MainPage_Loaded(object sender, EventArgs e)
+        private async void MainPage_Loaded(object sender, EventArgs e)
         {
             if (!Dict.Loaded)
-                FileLoader.AutoLoadDict();
+                await DisplayAlert("提示", FileLoader.AutoLoadDict(), "好的");
         }
 
         private async void ReloadBtn_Clicked(object sender, EventArgs e)
         {
             var dict = await FileLoader.PickYaml("选择一个以dict.yaml结尾的词库文件");
             if (string.IsNullOrEmpty(dict))
-                Simp.Show("未选择文件！");
+                await DisplayAlert("提示", "未选择文件！", "好的");
             else if (FileLoader.LoadDict(dict))
             {
-                Simp.Show("载入成功！");
+                await DisplayAlert("提示", "载入成功！", "好的");
                 WordToAdd.Text = string.Empty;
                 ManualEncode.Text = string.Empty;
                 Priority.Text = string.Empty;
@@ -362,20 +362,20 @@ namespace RimeTyrant
 
         private bool Unsaved { get; set; } = false;
 
-        private void ModBtn_Clicked(object sender, EventArgs e)
+        private async void ModBtn_Clicked(object sender, EventArgs e)
         {
             // 没有修改则恒为真，有修改则为修改的成败
             var modSuccess = !Modified()
                              || Simp.Try("应用修改", ApplyModify);
 
-            if (modSuccess && SaveDict())
+            if (modSuccess && await SaveDict())
             {
-                Simp.Show("应用并保存成功！");
+                await DisplayAlert("提示", "应用并保存成功！", "好的");
                 Unsaved = ModBtn.IsEnabled = false;
             }
         }
 
-        private static bool SaveDict()
+        private async Task<bool> SaveDict()
         {
             if (Simp.Try("保存修改后的词库失败，将自动保存至默认位置。", () => Dict.Save()))
                 return true;
@@ -386,7 +386,7 @@ namespace RimeTyrant
 
             var path = Path.Combine(dir, $"RimeTyrant_Modified.dict.yaml");
             if (File.Exists(path))
-                Simp.Show("默认位置已存在词库文件，将覆写");
+                await DisplayAlert("提示", "默认位置已存在词库文件，将覆写", "好的");
 
             return Simp.Try("保存至默认位置也失败了。若想避免数据损失，请照着日志手动修改。",
                             () => Dict.Save(path));

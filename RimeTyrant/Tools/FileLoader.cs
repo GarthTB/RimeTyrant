@@ -20,12 +20,12 @@ namespace RimeTyrant.Tools
             }
         }
 
-        public static void AutoLoadDict()
-            => Simp.Show(DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid()
-                ? "已自动载入程序Rime默认目录中的词库"
-                : DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path)
-                ? $"已自动载入{path}中的词库"
-                : "未能自动载入词库，请手动载入");
+        public static string AutoLoadDict()
+            => DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid()
+             ? "已自动载入程序Rime默认目录中的词库"
+             : DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path)
+             ? $"已自动载入{path}中的词库"
+             : "未能自动载入词库，请手动载入";
 
         private static bool AutoLoadDictAndroid()
         {
@@ -81,10 +81,10 @@ namespace RimeTyrant.Tools
             if (AutoLoadSamePath(fileName, out var filePath)
                 && TryLoadCode(filePath, Initialize, out Code? code))
             {
-                Simp.Show($"已自动载入词库同目录中的{codeName}单字库");
+                await Simp.Show($"已自动载入词库同目录中的{codeName}单字库");
                 return code;
             }
-            Simp.Show($"未能自动找到{codeName}单字库，请手动选择");
+            await Simp.Show($"未能自动找到{codeName}单字库，请手动选择");
             return await ManualLoadSingle(Initialize);
         }
 
@@ -93,10 +93,10 @@ namespace RimeTyrant.Tools
             var filePath = await PickYaml("选择一个以dict.yaml结尾的单字文件");
             if (TryLoadCode(filePath, Initialize, out Code? code))
             {
-                Simp.Show("成功载入指定的单字库");
+                await Simp.Show("成功载入指定的单字库");
                 return code;
             }
-            Simp.Show("载入指定的单字库失败，自动编码将不可用");
+            await Simp.Show("载入指定的单字库失败，自动编码将不可用");
             return null;
         }
 

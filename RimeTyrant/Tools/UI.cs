@@ -208,26 +208,21 @@ namespace RimeTyrant.Tools
                 {
                     _codeToSearch = value;
                     OnPropertyChanged(nameof(CodeToSearch));
-                    Search(value);
                     AllowDel = false;
                     AllowCut = false;
+                    _ = Search(value);
                 }
             }
         }
 
-        private async void Search(string code)
-        {
-            if (!string.IsNullOrEmpty(code))
-            {
-                var result = await SearchAsync(code);
-                _ = await MainThread.InvokeOnMainThreadAsync(() => OriginResults = result);
-            }
-            else OriginResults = [];
-        }
-
-        private static async Task<Item[]> SearchAsync(string code)
-            => await Task.Run(()
-                => Dict.CodeStartsWith(code).OrderBy(x => x.Code).ToArray());
+        private async Task Search(string code)
+            => OriginResults = string.IsNullOrEmpty(code)
+                ? []
+                : await MainThread.InvokeOnMainThreadAsync(()
+                    => Task.Run(()
+                    => Dict.CodeStartsWith(code)
+                           .OrderBy(x => x.Code)
+                           .ToArray()));
 
         private Item[] _originResults = [];
 

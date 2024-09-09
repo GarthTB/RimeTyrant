@@ -26,7 +26,7 @@ namespace RimeTyrant.Tools
             _log.Add($"{timestamp}\t{log}");
         }
 
-        public static void Save()
+        public static async Task Save(Page page)
         {
             if (_log.Count == 0)
                 throw new InvalidOperationException("没有记录到日志");
@@ -37,11 +37,11 @@ namespace RimeTyrant.Tools
 
             var path = Path.Combine(dir, $"RimeTyrant_{DateTime.Now:yyyyMMdd}.log");
             if (File.Exists(path))
-                Simp.Show("同天的日志文件已存在，将续写");
+                await page.DisplayAlert("提示","同天的日志文件已存在，将续写","好的");
 
             using StreamWriter sw = new(path, true, Encoding.UTF8);
             sw.Write(ReadAll());
-            Simp.Show($"日志已保存至：\n{path}");
+            await page.DisplayAlert("提示", $"日志已保存至：\n{path}", "好的");
         }
     }
 }
