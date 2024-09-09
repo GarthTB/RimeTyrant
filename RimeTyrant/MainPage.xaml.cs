@@ -91,9 +91,9 @@ namespace RimeTyrant
                      ? fullCodes : [];
             ui.OriginAutoCodeArray = fc;
             // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
-            ui.AutoCodeColor = fc.Length > 1
-                ? "IndianRed"
-                : CodeToSearch.TextColor.ToHex();
+            AutoCode.TextColor = fc.Length > 1
+                ? Color.FromRgb(214, 100, 0)
+                : CodeToSearch.TextColor;
         }
 
         /// <summary>
@@ -130,9 +130,9 @@ namespace RimeTyrant
         private void WordToAdd_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (encoder.IsValidWord(ui.WordToAdd))
-                ui.WordColor = Dict.HasWord(ui.WordToAdd)
-                    ? "IndianRed"
-                    : CodeToSearch.TextColor.ToHex();
+                WordToAdd.TextColor = Dict.HasWord(ui.WordToAdd)
+                    ? Color.FromRgb(214, 100, 0)
+                    : CodeToSearch.TextColor;
             LoadAutoCodes();
             CheckAddBtn();
         }

@@ -38,8 +38,7 @@
                 Grid.Column="1"
                 Placeholder="待添加的词"
                 Text="{Binding WordToAdd, Mode=TwoWay}"
-                TextChanged="WordToAdd_TextChanged"
-                TextColor="{Binding WordColor, Mode=TwoWay}" />
+                TextChanged="WordToAdd_TextChanged" />
 
             <Grid Grid.Row="2" Grid.Column="1">
                 <Grid.ColumnDefinitions>
@@ -89,8 +88,7 @@
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
                     ItemsSource="{Binding AutoCodeArray, Mode=TwoWay}"
                     SelectedIndex="{Binding AutoCodeIndex, Mode=TwoWay}"
-                    SelectedIndexChanged="AutoCode_SelectedIndexChanged"
-                    TextColor="{Binding AutoCodeColor, Mode=TwoWay}" />
+                    SelectedIndexChanged="AutoCode_SelectedIndexChanged" />
 
                 <Entry
                     x:Name="ManualEncode"

@@ -16,8 +16,6 @@ namespace RimeTyrant.Tools
 
         private string _wordToAdd = string.Empty;
 
-        private string _wordColor = string.Empty;
-
         private bool _useAutoEncode = false;
 
         private bool _usePriority = false;
@@ -37,8 +35,6 @@ namespace RimeTyrant.Tools
         // 是自动编码序号，不是编码
         private int _autoCodeIndex = -1;
 
-        private string _autoCodeColor = string.Empty;
-
         private string _manualCode = string.Empty;
 
         private string _priority = string.Empty;
@@ -56,22 +52,6 @@ namespace RimeTyrant.Tools
                 {
                     _wordToAdd = value;
                     OnPropertyChanged(nameof(WordToAdd));
-                }
-            }
-        }
-
-        /// <summary>
-        /// 加词框里的文字颜色，有该词则变红
-        /// </summary>
-        public string WordColor
-        {
-            get => _wordColor;
-            set
-            {
-                if (_wordColor != value)
-                {
-                    _wordColor = value;
-                    OnPropertyChanged(nameof(WordColor));
                 }
             }
         }
@@ -223,22 +203,6 @@ namespace RimeTyrant.Tools
             => AutoCodeIndex >= 0 && AutoCodeArray.Length > AutoCodeIndex
                 ? AutoCodeArray[AutoCodeIndex]
                 : null;
-
-        /// <summary>
-        /// 自动编码下拉菜单框里的文字颜色，有多项则变红
-        /// </summary>
-        public string AutoCodeColor
-        {
-            get => _autoCodeColor;
-            set
-            {
-                if (_autoCodeColor != value)
-                {
-                    _autoCodeColor = value;
-                    OnPropertyChanged(nameof(AutoCodeColor));
-                }
-            }
-        }
 
         private string[] _originAutoCodeArray = [];
 

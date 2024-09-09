@@ -24,7 +24,7 @@
 		<ApplicationTitle>RimeTyrant</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.Garth.RimeTyrant</ApplicationId>
+		<ApplicationId>com.companyname.rimetyrant</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
@@ -57,28 +57,34 @@
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <MauiXaml Update="LogPage.xaml">
+		<Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-	    <DebugType>none</DebugType>
+		<DebugType>none</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(Configuration)' == 'Release'">
-    	<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
-    	<PackageCertificateThumbprint>646AD04B5421E2CDA40D686AABC170C261ECA8A6</PackageCertificateThumbprint>
+		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
+		<PackageCertificateThumbprint>646AD04B5421E2CDA40D686AABC170C261ECA8A6</PackageCertificateThumbprint>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(RuntimeIdentifierOverride)' != ''">
-    	<RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
+		<RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
-	    <EnableLLVM>True</EnableLLVM>
+		<EnableLLVM>True</EnableLLVM>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
-	    <AndroidLinkTool>r8</AndroidLinkTool>
-	    <EnableLLVM>True</EnableLLVM>
-	    <DebugType>none</DebugType>
+		<AndroidLinkTool>r8</AndroidLinkTool>
+		<EnableLLVM>True</EnableLLVM>
+		<DebugType>none</DebugType>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -100,28 +106,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="..\README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="LogPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+	  <None Update="Resources\AppIcon\512.png">
+		<Pack>True</Pack>
+		<PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Resources\AppIcon\512.png">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
+	  <None Include="..\README.md">
+		<Pack>True</Pack>
+		<PackagePath>\</PackagePath>
 	  </None>
 	</ItemGroup>
 
