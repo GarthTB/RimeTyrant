@@ -58,7 +58,7 @@
                     x:Name="EncodeMethod"
                     Grid.Column="1"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
-                    ItemsSource="{Binding EncodeMethodArray, Mode=TwoWay}"
+                    ItemsSource="{Binding EncodeMethods, Mode=TwoWay}"
                     SelectedIndex="{Binding EncodeMethodIndex, Mode=TwoWay}"
                     SelectedIndexChanged="EncodeMethod_SelectedIndexChanged"
                     Title="编码方案" />
@@ -67,7 +67,7 @@
                     x:Name="CodeLength"
                     Grid.Column="3"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
-                    ItemsSource="{Binding ValidCodeLengthArray, Mode=TwoWay}"
+                    ItemsSource="{Binding ValidCodeLengths, Mode=TwoWay}"
                     SelectedIndex="{Binding CodeLengthIndex, Mode=TwoWay}"
                     SelectedIndexChanged="CodeLength_SelectedIndexChanged"
                     Title="码长" />
@@ -86,8 +86,8 @@
                     x:Name="AutoCode"
                     Grid.Column="0"
                     IsEnabled="{Binding UseAutoEncode, Mode=TwoWay}"
-                    ItemsSource="{Binding AutoCodeArray, Mode=TwoWay}"
-                    SelectedIndex="{Binding AutoCodeIndex, Mode=TwoWay}"
+                    ItemsSource="{Binding ShortCodes, Mode=TwoWay}"
+                    SelectedIndex="{Binding CodeIndex, Mode=TwoWay}"
                     SelectedIndexChanged="AutoCode_SelectedIndexChanged" />
 
                 <Entry
@@ -183,7 +183,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 ItemSelected="ResultArray_ItemSelected"
-                ItemsSource="{Binding ResultArray, Mode=TwoWay}"
+                ItemsSource="{Binding ViewResult, Mode=TwoWay}"
                 SelectionMode="Single">
                 <ListView.ItemTemplate>
                     <DataTemplate>

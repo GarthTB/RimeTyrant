@@ -20,20 +20,20 @@ namespace RimeTyrant.Tools
 
         private bool _usePriority = false;
 
-        private string[] _encodeMethodArray = [];
+        private string[] _encodeMethods = [];
 
         // 0：键道6
         private int _encodeMethodIndex = -1;
 
-        private int[] _validCodeLengthArray = [];
+        private int[] _validCodeLengths = [];
 
         // 是码长序号，不是码长
         private int _codeLengthIndex = -1;
 
-        private string[] _autoCodeArray = [];
+        private string[] _shortCodes = [];
 
         // 是自动编码序号，不是编码
-        private int _autoCodeIndex = -1;
+        private int _codeIndex = -1;
 
         private string _manualCode = string.Empty;
 
@@ -89,15 +89,15 @@ namespace RimeTyrant.Tools
             }
         }
 
-        public string[] EncodeMethodArray
+        public string[] EncodeMethods
         {
-            get => _encodeMethodArray;
+            get => _encodeMethods;
             set
             {
-                if (_encodeMethodArray != value)
+                if (_encodeMethods != value)
                 {
-                    _encodeMethodArray = value;
-                    OnPropertyChanged(nameof(EncodeMethodArray));
+                    _encodeMethods = value;
+                    OnPropertyChanged(nameof(EncodeMethods));
                 }
             }
         }
@@ -116,19 +116,19 @@ namespace RimeTyrant.Tools
         }
 
         public string? EncodeMethod
-            => EncodeMethodIndex >= 0 && EncodeMethodArray.Length > EncodeMethodIndex
-                ? EncodeMethodArray[EncodeMethodIndex]
+            => EncodeMethodIndex >= 0 && EncodeMethods.Length > EncodeMethodIndex
+                ? EncodeMethods[EncodeMethodIndex]
                 : null;
 
-        public int[] ValidCodeLengthArray
+        public int[] ValidCodeLengths
         {
-            get => _validCodeLengthArray;
+            get => _validCodeLengths;
             set
             {
-                if (_validCodeLengthArray != value)
+                if (_validCodeLengths != value)
                 {
-                    _validCodeLengthArray = value;
-                    OnPropertyChanged(nameof(ValidCodeLengthArray));
+                    _validCodeLengths = value;
+                    OnPropertyChanged(nameof(ValidCodeLengths));
                 }
             }
         }
@@ -144,8 +144,8 @@ namespace RimeTyrant.Tools
                 if (_codeLengthIndex != value)
                 {
                     _codeLengthIndex = value;
-                    AutoCodeArray = CodeLength != -1
-                                    && encoder.CutCodes(OriginAutoCodeArray, CodeLength, out var now)
+                    ShortCodes = CodeLength != -1
+                                    && encoder.CutCodes(FullCodes, CodeLength, out var now)
                                         ? now : [];
                     OnPropertyChanged(nameof(CodeLengthIndex));
                 }
@@ -153,22 +153,22 @@ namespace RimeTyrant.Tools
         }
 
         public int CodeLength
-            => CodeLengthIndex >= 0 && ValidCodeLengthArray.Length > CodeLengthIndex
-                ? ValidCodeLengthArray[CodeLengthIndex]
+            => CodeLengthIndex >= 0 && ValidCodeLengths.Length > CodeLengthIndex
+                ? ValidCodeLengths[CodeLengthIndex]
                 : -1;
 
-        public string[] AutoCodeArray
+        public string[] ShortCodes
         {
-            get => _autoCodeArray;
+            get => _shortCodes;
             private set
             {
-                if (_autoCodeArray != value)
+                if (_shortCodes != value)
                 {
                     var prev = AutoCode;
-                    _autoCodeArray = value;
-                    OnPropertyChanged(nameof(AutoCodeArray));
+                    _shortCodes = value;
+                    OnPropertyChanged(nameof(ShortCodes));
                     // 根据上次的选择来确定这次的选择
-                    AutoCodeIndex = value.Length switch
+                    CodeIndex = value.Length switch
                     {
                         0 => -1,
                         1 => 0,
@@ -186,35 +186,35 @@ namespace RimeTyrant.Tools
         /// <summary>
         /// 是自动编码序号，不是编码
         /// </summary>
-        public int AutoCodeIndex
+        public int CodeIndex
         {
-            get => _autoCodeIndex;
+            get => _codeIndex;
             set
             {
-                if (_autoCodeIndex != value)
+                if (_codeIndex != value)
                 {
-                    _autoCodeIndex = value;
-                    OnPropertyChanged(nameof(AutoCodeIndex));
+                    _codeIndex = value;
+                    OnPropertyChanged(nameof(CodeIndex));
                 }
             }
         }
 
         public string? AutoCode
-            => AutoCodeIndex >= 0 && AutoCodeArray.Length > AutoCodeIndex
-                ? AutoCodeArray[AutoCodeIndex]
+            => CodeIndex >= 0 && ShortCodes.Length > CodeIndex
+                ? ShortCodes[CodeIndex]
                 : null;
 
-        private string[] _originAutoCodeArray = [];
+        private string[] _fullCodes = [];
 
-        public string[] OriginAutoCodeArray
+        public string[] FullCodes
         {
-            get => _originAutoCodeArray;
+            get => _fullCodes;
             set
             {
-                if (_originAutoCodeArray != value)
+                if (_fullCodes != value)
                 {
-                    _originAutoCodeArray = value;
-                    AutoCodeArray = CodeLength != -1
+                    _fullCodes = value;
+                    ShortCodes = CodeLength != -1
                                     && encoder.CutCodes(value, CodeLength, out var now)
                                         ? now : [];
                 }
@@ -299,41 +299,41 @@ namespace RimeTyrant.Tools
             if (!string.IsNullOrEmpty(code))
             {
                 var result = await SearchAsync(code);
-                _ = await MainThread.InvokeOnMainThreadAsync(() => OriginResultArray = result);
+                _ = await MainThread.InvokeOnMainThreadAsync(() => OriginResults = result);
             }
-            else OriginResultArray = [];
+            else OriginResults = [];
         }
 
         private static async Task<Item[]> SearchAsync(string code)
             => await Task.Run(()
                 => Dict.CodeStartsWith(code).OrderBy(x => x.Code).ToArray());
 
-        private Item[] _originResultArray = [];
+        private Item[] _originResults = [];
 
-        public Item[] OriginResultArray
+        public Item[] OriginResults
         {
-            get => _originResultArray;
+            get => _originResults;
             set
             {
-                if (_originResultArray != value)
+                if (_originResults != value)
                 {
-                    _originResultArray = value;
-                    ResultArray = value.Select(e => e.Clone()).ToArray();
+                    _originResults = value;
+                    ViewResults = value.Select(e => e.Clone()).ToArray();
                 }
             }
         }
 
-        private Item[] _resultArray = [];
+        private Item[] _viewResults = [];
 
-        public Item[] ResultArray
+        public Item[] ViewResults
         {
-            get => _resultArray;
+            get => _viewResults;
             private set
             {
-                if (_resultArray != value)
+                if (_viewResults != value)
                 {
-                    _resultArray = value;
-                    OnPropertyChanged(nameof(ResultArray));
+                    _viewResults = value;
+                    OnPropertyChanged(nameof(ViewResults));
                 }
             }
         }

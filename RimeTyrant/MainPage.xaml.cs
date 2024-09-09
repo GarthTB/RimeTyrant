@@ -17,7 +17,7 @@ namespace RimeTyrant
             InitializeComponent();
             BindingContext = ui;
             ui.encoder = encoder;
-            ui.EncodeMethodArray = ["键道6", "<待续>"];
+            ui.EncodeMethods = ["键道6", "<待续>"];
         }
 
         #endregion
@@ -75,7 +75,7 @@ namespace RimeTyrant
                 && ui.UseAutoEncode
                 && !string.IsNullOrEmpty(ui.EncodeMethod)
                 && !encoder.Ready(ui.EncodeMethod))
-                (ui.ValidCodeLengthArray, ui.CodeLengthIndex) = await encoder.SetCode(ui.EncodeMethod);
+                (ui.ValidCodeLengths, ui.CodeLengthIndex) = await encoder.SetCode(ui.EncodeMethod);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace RimeTyrant
                      && encoder.Ready(ui.EncodeMethod)
                      && encoder.Encode(ui.WordToAdd, out var fullCodes)
                      ? fullCodes : [];
-            ui.OriginAutoCodeArray = fc;
+            ui.FullCodes = fc;
             // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
             AutoCode.TextColor = fc.Length > 1
                 ? Color.FromRgb(214, 100, 0)
@@ -114,12 +114,12 @@ namespace RimeTyrant
         #region 更新搜索结果
 
         private void RefreshAdd(Item newItem)
-            => ui.OriginResultArray = [.. ui.OriginResultArray
+            => ui.OriginResults = [.. ui.OriginResults
                 .Append(newItem)
                 .OrderBy(x => x.Code)];
 
         private void RefreshDel(int index)
-            => ui.OriginResultArray = [.. ui.OriginResultArray
+            => ui.OriginResults = [.. ui.OriginResults
                 .Where((element, idx) => idx != index)
                 .OrderBy(x => x.Code)];
 
@@ -240,8 +240,8 @@ namespace RimeTyrant
 
         private bool Modified()
         {
-            for (int i = 0; i < ui.ResultArray.Length; i++)
-                if (!ui.ResultArray[i].Equals(ui.OriginResultArray[i]))
+            for (int i = 0; i < ui.ViewResults.Length; i++)
+                if (!ui.ViewResults[i].Equals(ui.OriginResults[i]))
                     return true;
             return false;
         }
@@ -254,7 +254,7 @@ namespace RimeTyrant
         {
             // SelectedIndex不合格时这个按钮不应该激活
             var success = Simp.Try("删除词条", ()
-                => Dict.Remove(ui.OriginResultArray[SelectedIndex]));
+                => Dict.Remove(ui.OriginResults[SelectedIndex]));
 
             if (success)
             {
@@ -279,7 +279,7 @@ namespace RimeTyrant
 
         private void CutTheItem()
         {
-            var sel_item = ui.OriginResultArray[SelectedIndex].Clone();
+            var sel_item = ui.OriginResults[SelectedIndex].Clone();
             var tar_leng = ui.CodeToSearch.Length;
             if (!encoder.CutCode(sel_item.Code, tar_leng, out var cut_code))
                 throw new Exception("无法自动截短。未操作。");
@@ -287,7 +287,7 @@ namespace RimeTyrant
                 throw new Exception("选中词条的短码和搜索框内的编码不一致。未操作。");
             var cut_item = new Item(sel_item.Word, cut_code, sel_item.Priority);
             // 检查截短后的编码是否和现有的编码冲突，如果有，则要加长占位的码
-            var plc_hldr = ui.OriginResultArray.FirstOrDefault(x => x.Code == cut_code)?.Clone();
+            var plc_hldr = ui.OriginResults.FirstOrDefault(x => x.Code == cut_code)?.Clone();
             if (plc_hldr is null)
                 OneWay(sel_item, cut_item); // 没有冲突，直接缩短
             else TwoWay(sel_item, cut_code, cut_item, plc_hldr); // 有冲突，处理占位的码
@@ -304,7 +304,7 @@ namespace RimeTyrant
 
             void TwoWay(Item sel_item, string cut_code, Item cut_item, Item plc_hldr)
             {
-                var index = Array.FindIndex(ui.OriginResultArray, x => x.Code == cut_code);
+                var index = Array.FindIndex(ui.OriginResults, x => x.Code == cut_code);
                 var moved = Move(sel_item, plc_hldr);
                 if (Simp.Try("删除选中的过长条目", () => Dict.Remove(sel_item, "删除：过长"))
                     && Simp.Try("添加截短后的新条目", () => Dict.Add(cut_item, "添加：截短"))
@@ -336,7 +336,7 @@ namespace RimeTyrant
 
             Item FindNew(Item plc_hldr, string[] fullCodes)
             {
-                var range = ui.ValidCodeLengthArray.Where(l => l > plc_hldr.Code.Length).Order();
+                var range = ui.ValidCodeLengths.Where(l => l > plc_hldr.Code.Length).Order();
                 var new_code = IterFind(fullCodes, range);
                 return new_code.Length > 0
                     ? new Item(plc_hldr.Word, new_code, plc_hldr.Priority)
@@ -394,16 +394,16 @@ namespace RimeTyrant
 
         private void ApplyModify()
         {
-            var modified = ui.ResultArray
-                .Where(item => !ui.OriginResultArray.Any(x => x.Equals(item)))
+            var modified = ui.ViewResults
+                .Where(item => !ui.OriginResults.Any(x => x.Equals(item)))
                 .Select(item => item.Clone())
                 .ToArray();
 
             if (modified.Length == 0)
                 throw new Exception("没有任何修改！");
 
-            var discards = ui.OriginResultArray
-                .Where(item => !ui.ResultArray.Any(x => x.Equals(item)))
+            var discards = ui.OriginResults
+                .Where(item => !ui.ViewResults.Any(x => x.Equals(item)))
                 .Select(item => item.Clone())
                 .ToArray();
 
