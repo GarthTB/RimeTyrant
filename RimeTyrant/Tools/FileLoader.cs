@@ -41,16 +41,16 @@ namespace RimeTyrant.Tools
 
         private static bool AutoLoadDictWinUI(out string path)
         {
-            //var parentPath = Directory.GetParent(Directory.GetCurrentDirectory());
-            //if (parentPath != null && parentPath.Exists)
-            //{
-            //    var dicts = AutoFindYamls(parentPath.FullName);
-            //    if (dicts.Length == 1 && LoadDict(dicts[0]))
-            //    {
-            //        path = "程序上级";
-            //        return true;
-            //    }
-            //}
+            var parentPath = Directory.GetParent(Directory.GetCurrentDirectory());
+            if (parentPath != null && parentPath.Exists)
+            {
+                var dicts = AutoFindYamls(parentPath.FullName);
+                if (dicts.Length == 1 && LoadDict(dicts[0]))
+                {
+                    path = "程序上级";
+                    return true;
+                }
+            }
 
             var userPath = $@"C:\Users\{Environment.UserName}\AppData\Roaming\Rime";
             if (Directory.Exists(userPath))

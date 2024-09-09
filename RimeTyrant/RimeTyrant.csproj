@@ -45,6 +45,15 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Description>跨平台、高性能的Rime输入法词库管理器</Description>
 		<RepositoryUrl>https://github.com/GarthTB/RimeTyrant</RepositoryUrl>
+		<DefaultLanguage>zh-cn</DefaultLanguage>
+		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+		<PackageCertificateThumbprint>646AD04B5421E2CDA40D686AABC170C261ECA8A6</PackageCertificateThumbprint>
+		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	</PropertyGroup>
 
 	<ItemGroup>
