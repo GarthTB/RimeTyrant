@@ -53,6 +53,7 @@ namespace RimeTyrant.Tools
                 sw.WriteLine(sd.Priority == 0
                     ? $"{sd.Word}\t{sd.Code}"
                     : $"{sd.Word}\t{sd.Code}\t{sd.Priority}");
+            Logger.Add($"词库保存至：{path}，共{_dict.Count}个有效条目，{_shit.Count}个无效条目。");
         }
 
         /// <summary>

@@ -31,13 +31,17 @@ namespace RimeTyrant.Tools
             if (_log.Count == 0)
                 throw new InvalidOperationException("没有记录到日志");
 
-            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            var dir = DeviceInfo.Platform == DevicePlatform.Android
+                ? @"storage/emulated/0/RimeTyrant/Logs"
+                : DeviceInfo.Platform == DevicePlatform.WinUI
+                ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+                : throw new PlatformNotSupportedException("此平台暂未支持保存日志");
             if (!Directory.Exists(dir))
                 _ = Directory.CreateDirectory(dir);
 
             var path = Path.Combine(dir, $"RimeTyrant_{DateTime.Now:yyyyMMdd}.log");
             if (File.Exists(path))
-                await page.DisplayAlert("提示","同天的日志文件已存在，将续写","好的");
+                await page.DisplayAlert("提示", "同天的日志文件已存在，将续写", "好的");
 
             using StreamWriter sw = new(path, true, Encoding.UTF8);
             sw.Write(ReadAll());

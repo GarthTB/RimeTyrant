@@ -23,7 +23,7 @@ namespace RimeTyrant.Tools
         /// 编码方案类的构造函数封装
         /// </summary>
         /// <returns>
-        /// 所有有效码长数组, 默认码长的索引
+        /// 所有有效的码长, 默认码长的索引
         /// </returns>
         public async Task<(int[], int)> SetCode(string codeName)
         {

@@ -38,6 +38,7 @@ namespace RimeTyrant
             else if (FileLoader.LoadDict(dict))
             {
                 await DisplayAlert("提示", "载入成功！", "好的");
+                UseAutoEncode.IsChecked = false;
                 WordToAdd.Text = string.Empty;
                 ManualEncode.Text = string.Empty;
                 Priority.Text = string.Empty;

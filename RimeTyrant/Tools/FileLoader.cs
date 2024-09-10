@@ -20,6 +20,8 @@ namespace RimeTyrant.Tools
             }
         }
 
+        #region 加载词库
+
         public static string AutoLoadDict()
             => DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid()
              ? "已自动载入程序Rime默认目录中的词库"
@@ -76,16 +78,30 @@ namespace RimeTyrant.Tools
         public static bool LoadDict(string path)
             => Simp.Try($"载入位于{path}的词库", () => Dict.Load(path));
 
+        #endregion
+
+        #region 加载单字
+
         public static async Task<Code?> LoadSingle(string fileName, string codeName, Initializer Initialize)
         {
-            if (AutoLoadSamePath(fileName, out var filePath)
-                && TryLoadCode(filePath, Initialize, out Code? code))
+            if (AutoLoadSingle(fileName, Initialize, out Code? code))
             {
                 await Simp.Show($"已自动载入词库同目录中的{codeName}单字库");
                 return code;
             }
             await Simp.Show($"未能自动找到{codeName}单字库，请手动选择");
             return await ManualLoadSingle(Initialize);
+        }
+
+        private static bool AutoLoadSingle(string fileName, Initializer Initialize, out Code? code)
+        {
+            code = null;
+            var dir = Directory.GetParent(Dict.Path);
+            if (!Dict.Loaded || !File.Exists(Dict.Path) || dir is null)
+                return false;
+            var filePath = Path.Combine(dir.FullName, fileName);
+            return File.Exists(filePath)
+                   && TryLoadCode(filePath, Initialize, out code);
         }
 
         private static async Task<Code?> ManualLoadSingle(Initializer Initialize)
@@ -98,19 +114,6 @@ namespace RimeTyrant.Tools
             }
             await Simp.Show("载入指定的单字库失败，自动编码将不可用");
             return null;
-        }
-
-        /// <summary>
-        /// 自动加载词库相同路径中的单字文件
-        /// </summary>
-        private static bool AutoLoadSamePath(string fileName, out string filePath)
-        {
-            filePath = string.Empty;
-            var dir = Directory.GetParent(Dict.Path);
-            if (!Dict.Loaded || !File.Exists(Dict.Path) || dir is null)
-                return false;
-            filePath = Path.Combine(dir.FullName, fileName);
-            return File.Exists(filePath);
         }
 
         private static bool TryLoadCode(string filePath, Initializer Initialize, out Code? code)
@@ -127,5 +130,7 @@ namespace RimeTyrant.Tools
             }
             return code?.AllowAutoCode ?? false;
         }
+
+        #endregion
     }
 }
