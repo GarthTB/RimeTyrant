@@ -26,8 +26,25 @@ namespace RimeTyrant
 
         private async void MainPage_Loaded(object sender, EventArgs e)
         {
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+                await PermissOrQuit();
             if (!Dict.Loaded)
                 await DisplayAlert("提示", FileLoader.AutoLoadDict(), "好的");
+        }
+
+        private async Task PermissOrQuit()
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
+            if (status == PermissionStatus.Granted)
+                return;
+            var read = await Permissions.RequestAsync<Permissions.StorageRead>();
+            var write = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            var success = read == PermissionStatus.Granted
+                          && write == PermissionStatus.Granted;
+            if (success)
+                return;
+            await DisplayAlert("提示", "未获取到存储权限，软件无法使用。", "好的");
+            Application.Current?.Quit();
         }
 
         private async void ReloadBtn_Clicked(object sender, EventArgs e)
@@ -227,7 +244,9 @@ namespace RimeTyrant
             {
                 SelectedIndex = e.SelectedItemIndex;
                 DelBtn.IsEnabled = true;
-                CutBtn.IsEnabled = item.Code != CodeToSearch.Text;
+                CutBtn.IsEnabled = item.Code != CodeToSearch.Text
+                                   && !string.IsNullOrEmpty(ui.EncodeMethod)
+                                   && encoder.Ready(ui.EncodeMethod);
                 return;
             }
             SelectedIndex = -1;
@@ -371,11 +390,19 @@ namespace RimeTyrant
             // 没有修改则恒为真，有修改则为修改的成败
             var modSuccess = !Modified()
                              || Simp.Try("应用修改", ApplyModify);
-
-            if (modSuccess && await SaveDict())
+            try
             {
-                await DisplayAlert("提示", "应用并保存成功！", "好的");
-                Unsaved = ModBtn.IsEnabled = false;
+                var saveSuccess = await SaveDict();
+
+                if (modSuccess && saveSuccess)
+                {
+                    await DisplayAlert("提示", "应用并保存成功！", "好的");
+                    Unsaved = ModBtn.IsEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("提示", $"保存失败：\n{ex.Message}", "好的");
             }
         }
 

@@ -19,6 +19,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<PublishTrimmed>True</PublishTrimmed>
 
 		<!-- Display name -->
 		<ApplicationTitle>RimeTyrant</ApplicationTitle>
@@ -68,6 +69,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(Configuration)' == 'Release'">
+		<PublishAot>True</PublishAot>
 		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
 		<PackageCertificateThumbprint>646AD04B5421E2CDA40D686AABC170C261ECA8A6</PackageCertificateThumbprint>
 	</PropertyGroup>
@@ -79,7 +81,6 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
 		<AndroidLinkTool>r8</AndroidLinkTool>
-		<DebugType>none</DebugType>
 	</PropertyGroup>
 
 	<ItemGroup>
