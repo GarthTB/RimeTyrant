@@ -24,7 +24,7 @@
             Grid.Row="1"
             Clicked="ExportBtn_Clicked"
             HorizontalOptions="FillAndExpand"
-            Text="导出日志" />
+            Text="导出并清空日志" />
     </Grid>
 
 </ContentPage>

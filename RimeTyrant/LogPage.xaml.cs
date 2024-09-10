@@ -17,6 +17,8 @@ public partial class LogPage : ContentPage
         try
         {
             await Logger.Save(this);
+            Logger.Clear();
+            LogLabel.Text = string.Empty;
             ExportBtn.IsEnabled = false;
         }
         catch (Exception ex)

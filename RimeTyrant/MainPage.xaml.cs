@@ -379,23 +379,6 @@ namespace RimeTyrant
             }
         }
 
-        private async Task<bool> SaveDict()
-        {
-            if (Simp.Try("保存修改后的词库失败，将自动保存至默认位置。", () => Dict.Save()))
-                return true;
-
-            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Dict");
-            if (!Directory.Exists(dir))
-                _ = Directory.CreateDirectory(dir);
-
-            var path = Path.Combine(dir, $"RimeTyrant_Modified.dict.yaml");
-            if (File.Exists(path))
-                await DisplayAlert("提示", "默认位置已存在词库文件，将覆写", "好的");
-
-            return Simp.Try("保存至默认位置也失败了。若想避免数据损失，请照着日志手动修改。",
-                            () => Dict.Save(path));
-        }
-
         private void ApplyModify()
         {
             var modified = ui.ViewResults
@@ -418,6 +401,53 @@ namespace RimeTyrant
             Dict.RemoveAll(discards);
             Dict.AddAll(modified);
             Logger.Add($"---成功完成{modified.Length}项手动修改。---");
+        }
+
+        private async Task<bool> SaveDict()
+        {
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+                return await SaveDictAndroid();
+            if (DeviceInfo.Platform == DevicePlatform.WinUI)
+                return await SaveDictWinUI();
+            await DisplayAlert("提示", "此平台暂未支持！", "好的");
+            return false;
+        }
+
+        private async Task<bool> SaveDictAndroid()
+        {
+            var dir = @"storage/emulated/0/RimeTyrant";
+            if (!Directory.Exists(dir))
+                _ = Directory.CreateDirectory(dir);
+
+            var name = Path.GetFileName(Dict.Path)
+                       ?? $"Modified-{DateTime.Now:yyyyMMdd-HHmmss}.dict.yaml";
+
+            var path = Path.Combine(dir, name);
+            if (File.Exists(path))
+                await DisplayAlert("提示", $"{path}已存在{name}，将覆写", "好的");
+
+            return Simp.Try("保存修改后的词库失败。若想避免数据损失，请照着日志手动修改。",
+                            () => Dict.Save(path));
+        }
+
+        private async Task<bool> SaveDictWinUI()
+        {
+            if (Simp.Try("保存修改后的词库失败，将自动保存至默认位置。", () => Dict.Save()))
+                return true;
+
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Dict");
+            if (!Directory.Exists(dir))
+                _ = Directory.CreateDirectory(dir);
+
+            var name = Path.GetFileName(Dict.Path)
+                       ?? $"Modified-{DateTime.Now:yyyyMMdd-HHmmss}.dict.yaml";
+
+            var path = Path.Combine(dir, name);
+            if (File.Exists(path))
+                await DisplayAlert("提示", $"{path}已存在{name}，将覆写", "好的");
+
+            return Simp.Try("保存至默认位置也失败了。若想避免数据损失，请照着日志手动修改。",
+                            () => Dict.Save(path));
         }
 
         #endregion

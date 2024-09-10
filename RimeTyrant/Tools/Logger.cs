@@ -6,6 +6,8 @@ namespace RimeTyrant.Tools
     {
         private static readonly List<string> _log = [];
 
+        public static void Clear() => _log.Clear();
+
         public static string ReadAll()
         {
             var sb = new StringBuilder();
