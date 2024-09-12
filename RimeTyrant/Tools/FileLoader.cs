@@ -34,7 +34,7 @@ namespace RimeTyrant.Tools
             var userPath = @"storage/emulated/0/rime";
             if (Directory.Exists(userPath))
             {
-                var dicts = AutoFindYamls(userPath);
+                var dicts = AutoFindDicts(userPath);
                 if (dicts.Length == 1 && LoadDict(dicts[0]))
                     return true;
             }
@@ -45,9 +45,9 @@ namespace RimeTyrant.Tools
         {
             path = "程序上级";
             var parentPath = Directory.GetParent(Directory.GetCurrentDirectory());
-            if (parentPath != null && parentPath.Exists)
+            if (parentPath is not null && parentPath.Exists)
             {
-                var dicts = AutoFindYamls(parentPath.FullName);
+                var dicts = AutoFindDicts(parentPath.FullName);
                 if (dicts.Length == 1 && LoadDict(dicts[0]))
                     return true;
             }
@@ -56,7 +56,7 @@ namespace RimeTyrant.Tools
             var userPath = $@"C:\Users\{Environment.UserName}\AppData\Roaming\Rime";
             if (Directory.Exists(userPath))
             {
-                var dicts = AutoFindYamls(userPath);
+                var dicts = AutoFindDicts(userPath);
                 if (dicts.Length == 1 && LoadDict(dicts[0]))
                     return true;
             }
@@ -65,7 +65,7 @@ namespace RimeTyrant.Tools
             return false;
         }
 
-        private static string[] AutoFindYamls(string directory)
+        private static string[] AutoFindDicts(string directory)
         {
             string[] dicts = [];
             var success = Simp.Try("自动寻找dict.yaml文件", ()
@@ -118,16 +118,9 @@ namespace RimeTyrant.Tools
 
         private static bool TryLoadCode(string filePath, Initializer Initialize, out Code? code)
         {
-            try
-            {
-                if (!File.Exists(filePath))
-                    throw new FileNotFoundException();
-                code = Initialize(filePath);
-            }
-            catch (Exception)
-            {
-                code = null;
-            }
+            Code? tempCode = null;
+            code = Simp.Try(null, () => tempCode = Initialize(filePath), false)
+                ? tempCode : null;
             return code?.AllowAutoCode ?? false;
         }
 

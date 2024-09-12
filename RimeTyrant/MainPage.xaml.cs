@@ -95,7 +95,8 @@ namespace RimeTyrant
                 && !encoder.Ready(ui.EncodeMethod))
             {
                 (ui.ValidCodeLengths, CodeLength.SelectedIndex) = await encoder.SetCode(ui.EncodeMethod);
-                UseAutoEncode.IsChecked = encoder.Ready(ui.EncodeMethod);
+                if (!encoder.Ready(ui.EncodeMethod))
+                    (UseAutoEncode.IsChecked, EncodeMethod.SelectedIndex) = (false, -1);
             }
         }
 

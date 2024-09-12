@@ -23,7 +23,7 @@ namespace RimeTyrant.Codes
                 keyElements[i] = Dict.Where(e => e.Code.Length > 3 && e.Word == keyChars[i].ToString())
                                      .Select(e => e.Code[..3])
                                      .Distinct()
-                                     .Select(x => x.ToArray())
+                                     .Select(x => x.ToCharArray())
                                      .ToArray();
             return keyElements.All(x => x.Length > 0);
         }
@@ -58,7 +58,7 @@ namespace RimeTyrant.Codes
 
         public override bool CutCode(string fullCode, int length, out string shortCode)
         {
-            shortCode = Simp.Try("直接截取前length个字符", () => _ = fullCode[..length], false)
+            shortCode = Simp.Try(null, () => _ = fullCode[..length], false)
                         ? fullCode[..length]
                         : string.Empty;
             return shortCode.Length > 0;

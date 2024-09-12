@@ -37,7 +37,8 @@ namespace RimeTyrant.Tools
                         _name = codeName;
                         return ([3, 4, 5, 6], 1);
                     default:
-                        throw new Exception();
+                        await Simp.Show("还未支持该编码方案哦");
+                        return ([], -1);
                 }
             }
             catch

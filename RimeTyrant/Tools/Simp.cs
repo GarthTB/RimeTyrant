@@ -12,7 +12,7 @@
         /// <param name="action">要try的动作</param>
         /// <param name="showError">是否在catch时显示错误</param>
         /// <returns>有catch则false，无catch则true</returns>
-        public static bool Try(string msg, Action action, bool showError = true)
+        public static bool Try(string? msg, Action action, bool showError = true)
         {
             try
             {
