@@ -33,11 +33,27 @@ namespace RimeTyrant.Tools
             if (_log.Count == 0)
                 throw new InvalidOperationException("没有记录到日志");
 
-            var dir = DeviceInfo.Platform == DevicePlatform.Android
-                ? @"storage/emulated/0/RimeTyrant/Logs"
-                : DeviceInfo.Platform == DevicePlatform.WinUI
-                ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
-                : throw new PlatformNotSupportedException("此平台暂未支持保存日志");
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+                await SaveAndroid(page);
+            else if (DeviceInfo.Platform == DevicePlatform.WinUI)
+                await SaveWinUI(page);
+            else throw new PlatformNotSupportedException("此平台暂未支持！");
+        }
+
+        private static async Task SaveAndroid(Page page)
+        {
+            var dirName = "Logs";
+            var fileName = $"RimeTyrant_{DateTime.Now:yyyyMMdd}.log";
+            var content = ReadAll();
+            await page.DisplayAlert("提示",
+                await AndroidFile.Write(dirName, fileName, content)
+                ? "日志已保存成功" : "日志保存失败",
+                "好的");
+        }
+
+        private static async Task SaveWinUI(Page page)
+        {
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
             if (!Directory.Exists(dir))
                 _ = Directory.CreateDirectory(dir);
 

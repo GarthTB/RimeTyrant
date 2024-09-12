@@ -26,25 +26,8 @@ namespace RimeTyrant
 
         private async void MainPage_Loaded(object sender, EventArgs e)
         {
-            if (DeviceInfo.Platform == DevicePlatform.Android)
-                await PermissOrQuit();
             if (!Dict.Loaded)
                 await DisplayAlert("提示", FileLoader.AutoLoadDict(), "好的");
-        }
-
-        private async Task PermissOrQuit()
-        {
-            var status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
-            if (status == PermissionStatus.Granted)
-                return;
-            var read = await Permissions.RequestAsync<Permissions.StorageRead>();
-            var write = await Permissions.RequestAsync<Permissions.StorageWrite>();
-            var success = read == PermissionStatus.Granted
-                          && write == PermissionStatus.Granted;
-            if (success)
-                return;
-            await DisplayAlert("提示", "未获取到存储权限，软件无法使用。", "好的");
-            Application.Current?.Quit();
         }
 
         private async void ReloadBtn_Clicked(object sender, EventArgs e)
@@ -106,11 +89,11 @@ namespace RimeTyrant
         private void LoadAutoCodes()
         {
             var fc = Dict.Loaded
-                     && UseAutoEncode.IsChecked
-                     && !string.IsNullOrEmpty(ui.EncodeMethod)
-                     && encoder.Ready(ui.EncodeMethod)
-                     && encoder.Encode(WordToAdd.Text, out var fullCodes)
-                     ? fullCodes : [];
+                           && UseAutoEncode.IsChecked
+                           && !string.IsNullOrEmpty(ui.EncodeMethod)
+                           && encoder.Ready(ui.EncodeMethod)
+                           && encoder.Encode(WordToAdd.Text, out var fullCodes)
+                           ? fullCodes : [];
             ui.FullCodes = fc;
             // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
             AutoCode.TextColor = fc.Length > 1
@@ -235,7 +218,7 @@ namespace RimeTyrant
 
         #endregion
 
-        #region 选中编码
+        #region 选中条目
 
         private int SelectedIndex { get; set; }
 
@@ -441,22 +424,9 @@ namespace RimeTyrant
             return false;
         }
 
-        private async Task<bool> SaveDictAndroid()
-        {
-            var dir = @"storage/emulated/0/RimeTyrant";
-            if (!Directory.Exists(dir))
-                _ = Directory.CreateDirectory(dir);
-
-            var name = Path.GetFileName(Dict.Path)
-                       ?? $"Modified-{DateTime.Now:yyyyMMdd-HHmmss}.dict.yaml";
-
-            var path = Path.Combine(dir, name);
-            if (File.Exists(path))
-                await DisplayAlert("提示", $"{path}已存在{name}，将覆写", "好的");
-
-            return Simp.Try("保存修改后的词库失败。若想避免数据损失，请照着日志手动修改。",
-                            () => Dict.Save(path));
-        }
+        private static async Task<bool> SaveDictAndroid()
+            => Simp.Try("保存修改后的词库失败。为避免数据损失，请照着日志手动修改。", () => Dict.Save())
+               && await AndroidFile.CopyTo(Dict.Path, "Dicts");
 
         private async Task<bool> SaveDictWinUI()
         {
@@ -474,7 +444,7 @@ namespace RimeTyrant
             if (File.Exists(path))
                 await DisplayAlert("提示", $"{path}已存在{name}，将覆写", "好的");
 
-            return Simp.Try("保存至默认位置也失败了。若想避免数据损失，请照着日志手动修改。",
+            return Simp.Try("保存至默认位置也失败了。为避免数据损失，请照着日志手动修改。",
                             () => Dict.Save(path));
         }
 

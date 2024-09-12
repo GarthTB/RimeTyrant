@@ -53,7 +53,8 @@ namespace RimeTyrant.Tools
             }
 
             path = "Rime默认用户目录";
-            var userPath = $@"C:\Users\{Environment.UserName}\AppData\Roaming\Rime";
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var userPath = Path.Combine(appData, "Rime");
             if (Directory.Exists(userPath))
             {
                 var dicts = AutoFindDicts(userPath);

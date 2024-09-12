@@ -38,6 +38,7 @@ namespace RimeTyrant.Tools
                         return ([3, 4, 5, 6], 1);
                     default:
                         await Simp.Show("还未支持该编码方案哦");
+                        Reset();
                         return ([], -1);
                 }
             }

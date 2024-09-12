@@ -11,7 +11,7 @@
         /// <param name="msg">显示在错误弹窗中的内容</param>
         /// <param name="action">要try的动作</param>
         /// <param name="showError">是否在catch时显示错误</param>
-        /// <returns>有catch则false，无catch则true</returns>
+        /// <returns>无错则true，有错则false</returns>
         public static bool Try(string? msg, Action action, bool showError = true)
         {
             try
