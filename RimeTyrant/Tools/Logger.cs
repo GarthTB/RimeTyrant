@@ -36,8 +36,9 @@ namespace RimeTyrant.Tools
             await SaveAndroid(page);
 #elif WINDOWS
             await SaveWinUI(page);
-#endif
+#else
             throw new PlatformNotSupportedException("此平台暂未支持！");
+#endif
         }
 
 #if ANDROID
