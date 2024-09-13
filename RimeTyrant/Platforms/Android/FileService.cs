@@ -6,14 +6,31 @@ using RimeTyrant.Tools;
 [assembly: Dependency(typeof(FileService))]
 namespace RimeTyrant
 {
-    public interface IFileService
+    public class AndroidFile
+    {
+        public static async Task<bool> Write(string dirName, string fileName, string content)
+        {
+            var dep = DependencyService.Get<IFileService>();
+            return dep is not null
+                   && await dep.AndroidWriteFile(dirName, fileName, content);
+        }
+
+        public static async Task<bool> CopyTo(string oriPath, string dirName)
+        {
+            var dep = DependencyService.Get<IFileService>();
+            return dep is not null
+                   && await dep.AndroidCopyTo(oriPath, dirName);
+        }
+    }
+
+    internal interface IFileService
     {
         Task<bool> AndroidWriteFile(string dirName, string fileName, string content);
 
         Task<bool> AndroidCopyTo(string oriPath, string dirName);
     }
 
-    public class FileService : IFileService
+    internal class FileService : IFileService
     {
         public async Task<bool> AndroidWriteFile(string dirName, string fileName, string content)
         {
@@ -55,6 +72,7 @@ namespace RimeTyrant
             var folderPath = Path.Combine(dir, dirName);
             if (!Directory.Exists(folderPath))
                 _ = Directory.CreateDirectory(folderPath);
+
             return folderPath;
         }
     }

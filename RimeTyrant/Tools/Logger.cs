@@ -34,12 +34,17 @@ namespace RimeTyrant.Tools
                 throw new InvalidOperationException("没有记录到日志");
 
             if (DeviceInfo.Platform == DevicePlatform.Android)
+            {
+#if ANDROID
                 await SaveAndroid(page);
+#endif
+            }
             else if (DeviceInfo.Platform == DevicePlatform.WinUI)
                 await SaveWinUI(page);
             else throw new PlatformNotSupportedException("此平台暂未支持！");
         }
 
+#if ANDROID
         private static async Task SaveAndroid(Page page)
         {
             var dirName = "Logs";
@@ -50,6 +55,7 @@ namespace RimeTyrant.Tools
                 ? "日志已保存成功" : "日志保存失败",
                 "好的");
         }
+#endif
 
         private static async Task SaveWinUI(Page page)
         {

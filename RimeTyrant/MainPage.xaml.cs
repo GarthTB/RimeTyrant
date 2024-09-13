@@ -417,16 +417,22 @@ namespace RimeTyrant
         private async Task<bool> SaveDict()
         {
             if (DeviceInfo.Platform == DevicePlatform.Android)
+            {
+#if ANDROID
                 return await SaveDictAndroid();
+#endif
+            }
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
                 return await SaveDictWinUI();
             await DisplayAlert("提示", "此平台暂未支持！", "好的");
             return false;
         }
 
+#if ANDROID
         private static async Task<bool> SaveDictAndroid()
             => Simp.Try("保存修改后的词库失败。为避免数据损失，请照着日志手动修改。", () => Dict.Save())
                && await AndroidFile.CopyTo(Dict.Path, "Dicts");
+#endif
 
         private async Task<bool> SaveDictWinUI()
         {
