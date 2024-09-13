@@ -23,12 +23,18 @@ namespace RimeTyrant.Tools
         #region 加载词库
 
         public static string AutoLoadDict()
-            => DeviceInfo.Platform == DevicePlatform.Android && AutoLoadDictAndroid()
-             ? "已自动载入程序Rime默认目录中的词库"
-             : DeviceInfo.Platform == DevicePlatform.WinUI && AutoLoadDictWinUI(out var path)
-             ? $"已自动载入{path}中的词库"
-             : "未能自动载入词库，请手动载入";
+        {
+#if ANDROID
+            if (AutoLoadDictAndroid())
+                return "已自动载入程序Rime默认目录中的词库";
+#elif WINDOWS
+            if (AutoLoadDictWinUI(out var path))
+                return $"已自动载入{path}中的词库";
+#endif
+            return "未能自动载入词库，请手动载入";
+        }
 
+#if ANDROID
         private static bool AutoLoadDictAndroid()
         {
             var userPath = @"storage/emulated/0/rime";
@@ -40,7 +46,9 @@ namespace RimeTyrant.Tools
             }
             return false;
         }
+#endif
 
+#if WINDOWS
         private static bool AutoLoadDictWinUI(out string path)
         {
             path = "程序上级";
@@ -65,6 +73,7 @@ namespace RimeTyrant.Tools
             path = string.Empty;
             return false;
         }
+#endif
 
         private static string[] AutoFindDicts(string directory)
         {

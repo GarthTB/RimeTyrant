@@ -206,7 +206,7 @@ namespace RimeTyrant
                 : "0";
             var newItem = new Item(WordToAdd.Text, code, priority);
 
-            var success = Simp.Try("添加词条", () => Dict.Add(newItem));
+            var success = Simp.Try("添加条目", () => Dict.Add(newItem));
 
             if (success)
             {
@@ -260,13 +260,14 @@ namespace RimeTyrant
         private void DelBtn_Clicked(object sender, EventArgs e)
         {
             // SelectedIndex不合格时这个按钮不应该激活
-            var success = Simp.Try("删除词条", ()
+            var success = Simp.Try("删除条目", ()
                 => Dict.Remove(ui.OriginResults[SelectedIndex]));
 
             if (success)
             {
                 RefreshDel(SelectedIndex);
-                DelBtn.IsEnabled = false;
+                ResultArray.SelectedItem = null;
+                // DelBtn.IsEnabled = false;
                 ModBtn.IsEnabled = Unsaved = true;
             }
         }
@@ -279,19 +280,24 @@ namespace RimeTyrant
         {
             if (Simp.Try("自动截短", CutTheItem))
             {
-                CutBtn.IsEnabled = false;
+                ResultArray.SelectedItem = null;
+                // CutBtn.IsEnabled = false;
                 ModBtn.IsEnabled = Unsaved = true;
             }
         }
 
         private void CutTheItem()
         {
-            var sel_item = ui.OriginResults[SelectedIndex].Clone();
             var tar_leng = ui.CodeToSearch.Length;
+            if (!ui.ValidCodeLengths.Contains(tar_leng))
+                throw new Exception("短码的码长不是有效码长。未操作。");
+
+            var sel_item = ui.OriginResults[SelectedIndex].Clone();
             if (!encoder.CutCode(sel_item.Code, tar_leng, out var cut_code))
                 throw new Exception("无法自动截短。未操作。");
             if (cut_code != ui.CodeToSearch)
-                throw new Exception("选中词条的短码和搜索框内的编码不一致。未操作。");
+                throw new Exception("选中条目的短码和搜索框内的编码不一致。未操作。");
+
             var cut_item = new Item(sel_item.Word, cut_code, sel_item.Priority);
             // 检查截短后的编码是否和现有的编码冲突，如果有，则要加长占位的码
             var plc_hldr = ui.OriginResults.FirstOrDefault(x => x.Code == cut_code)?.Clone();
@@ -416,16 +422,14 @@ namespace RimeTyrant
 
         private async Task<bool> SaveDict()
         {
-            if (DeviceInfo.Platform == DevicePlatform.Android)
-            {
 #if ANDROID
-                return await SaveDictAndroid();
-#endif
-            }
-            if (DeviceInfo.Platform == DevicePlatform.WinUI)
-                return await SaveDictWinUI();
+            return await SaveDictAndroid();
+#elif WINDOWS
+            return await SaveDictWinUI();
+#else
             await DisplayAlert("提示", "此平台暂未支持！", "好的");
             return false;
+#endif
         }
 
 #if ANDROID
@@ -434,6 +438,7 @@ namespace RimeTyrant
                && await AndroidFile.CopyTo(Dict.Path, "Dicts");
 #endif
 
+#if WINDOWS
         private async Task<bool> SaveDictWinUI()
         {
             if (Simp.Try("保存修改后的词库失败，将自动保存至默认位置。", () => Dict.Save()))
@@ -448,11 +453,12 @@ namespace RimeTyrant
 
             var path = Path.Combine(dir, name);
             if (File.Exists(path))
-                await DisplayAlert("提示", $"{path}已存在{name}，将覆写", "好的");
+                await DisplayAlert("提示", $"文件夹：\n{path}\n中已存在文件：\n{name}\n将直接覆写", "好的");
 
             return Simp.Try("保存至默认位置也失败了。为避免数据损失，请照着日志手动修改。",
                             () => Dict.Save(path));
         }
+#endif
 
         #endregion
     }

@@ -32,16 +32,12 @@ namespace RimeTyrant.Tools
         {
             if (_log.Count == 0)
                 throw new InvalidOperationException("没有记录到日志");
-
-            if (DeviceInfo.Platform == DevicePlatform.Android)
-            {
 #if ANDROID
-                await SaveAndroid(page);
+            await SaveAndroid(page);
+#elif WINDOWS
+            await SaveWinUI(page);
 #endif
-            }
-            else if (DeviceInfo.Platform == DevicePlatform.WinUI)
-                await SaveWinUI(page);
-            else throw new PlatformNotSupportedException("此平台暂未支持！");
+            throw new PlatformNotSupportedException("此平台暂未支持！");
         }
 
 #if ANDROID
@@ -51,12 +47,13 @@ namespace RimeTyrant.Tools
             var fileName = $"RimeTyrant_{DateTime.Now:yyyyMMdd}.log";
             var content = ReadAll();
             await page.DisplayAlert("提示",
-                await AndroidFile.Write(dirName, fileName, content)
+                AndroidFile.Write(dirName, fileName, content)
                 ? "日志已保存成功" : "日志保存失败",
                 "好的");
         }
 #endif
 
+#if WINDOWS
         private static async Task SaveWinUI(Page page)
         {
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
@@ -71,5 +68,6 @@ namespace RimeTyrant.Tools
             sw.Write(ReadAll());
             await page.DisplayAlert("提示", $"日志已保存至：\n{path}", "好的");
         }
+#endif
     }
 }

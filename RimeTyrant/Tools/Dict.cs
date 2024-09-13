@@ -62,9 +62,9 @@ namespace RimeTyrant.Tools
         public static void Add(Item entry, string? message = null)
         {
             if (HasEntry(entry))
-                throw new Exception("词库中已存在该词条！未添加！");
+                throw new Exception("词库中已存在该条目！未添加！");
             if (!_dict.Add(entry))
-                throw new Exception($"无法添加词条：{entry.Word} {entry.Code} {entry.Priority}");
+                throw new Exception($"无法添加条目：{entry.Word} {entry.Code} {entry.Priority}");
             Logger.Add(message ?? "添加", entry);
         }
 
@@ -74,7 +74,7 @@ namespace RimeTyrant.Tools
         public static void Remove(Item entry, string? message = null)
         {
             if (_dict.RemoveWhere(e => e.Equals(entry)) < 1)
-                throw new Exception($"找不到词条：{entry.Word} {entry.Code} {entry.Priority}");
+                throw new Exception($"找不到条目：{entry.Word} {entry.Code} {entry.Priority}");
             Logger.Add(message ?? "删除", entry);
         }
 

@@ -1,7 +1,7 @@
 ﻿namespace RimeTyrant.Tools
 {
     /// <summary>
-    /// Item类，用于存储一个词条（Entry这个名字被用了）
+    /// Item类，用于存储一个条目（Entry这个名字被用了）
     /// </summary>
     internal class Item
     {
