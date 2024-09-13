@@ -95,7 +95,7 @@ namespace RimeTyrant
                            && encoder.Encode(WordToAdd.Text, out var fullCodes)
                            ? fullCodes : [];
             ui.FullCodes = fc;
-            // 有多项则变红，但是不知道为什么鼠标悬停就会变回原来颜色
+            // 有多项则变红
             AutoCode.TextColor = fc.Length > 1
                 ? Color.FromRgb(214, 100, 0)
                 : CodeToSearch.TextColor;

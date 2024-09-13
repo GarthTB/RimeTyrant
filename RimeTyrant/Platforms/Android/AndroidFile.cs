@@ -1,5 +1,4 @@
 ﻿using RimeTyrant.Tools;
-using static Java.Util.Jar.Attributes;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 
@@ -25,12 +24,12 @@ namespace RimeTyrant
                 if (File.Exists(destPath))
                     await Simp.Show($"文件夹：\n{folderPath}\n中已存在文件：\n{fileName}\n将直接覆写");
                 File.Copy(oriPath, destPath, true);
-                Logger.Add($"将词库拷贝到{destPath}");
+                Logger.Add($"将词库复制到外部目录：\n{destPath}");
                 return true;
             }
             catch (Exception ex)
             {
-                await Simp.Show($"将词库拷贝到外部路径失败。错误：\n{ex.Message}");
+                await Simp.Show($"将词库复制到外部目录失败。错误：\n{ex.Message}");
                 return false;
             }
         }
