@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using RimeTyrant.Tools;
 
 namespace RimeTyrant
 {
@@ -18,10 +17,6 @@ namespace RimeTyrant
 
 #if DEBUG
             builder.Logging.AddDebug();
-#endif
-
-#if ANDROID
-            builder.Services.AddSingleton<IFileService, FileService>();
 #endif
 
             return builder.Build();

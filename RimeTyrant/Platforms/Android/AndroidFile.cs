@@ -1,38 +1,12 @@
-﻿using RimeTyrant;
-using RimeTyrant.Tools;
+﻿using RimeTyrant.Tools;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 
-[assembly: Dependency(typeof(FileService))]
 namespace RimeTyrant
 {
-    public class AndroidFile
+    internal class AndroidFile
     {
         public static async Task<bool> Write(string dirName, string fileName, string content)
-        {
-            var dep = DependencyService.Get<IFileService>();
-            return dep is not null
-                   && await dep.AndroidWriteFile(dirName, fileName, content);
-        }
-
-        public static async Task<bool> CopyTo(string oriPath, string dirName)
-        {
-            var dep = DependencyService.Get<IFileService>();
-            return dep is not null
-                   && await dep.AndroidCopyTo(oriPath, dirName);
-        }
-    }
-
-    internal interface IFileService
-    {
-        Task<bool> AndroidWriteFile(string dirName, string fileName, string content);
-
-        Task<bool> AndroidCopyTo(string oriPath, string dirName);
-    }
-
-    internal class FileService : IFileService
-    {
-        public async Task<bool> AndroidWriteFile(string dirName, string fileName, string content)
         {
             try
             {
@@ -48,7 +22,7 @@ namespace RimeTyrant
             }
         }
 
-        public async Task<bool> AndroidCopyTo(string oriPath, string dirName)
+        public static async Task<bool> CopyTo(string oriPath, string dirName)
         {
             try
             {
