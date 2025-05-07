@@ -1,5 +1,7 @@
 # [Rime词库管理器](https://github.com/GarthTB/RimeTyrant)
 
+## 20250507 由于MAUI框架不稳定，此项目封存。 
+
 跨平台、高性能的Rime输入法词库管理器
 
 ## 环境依赖
